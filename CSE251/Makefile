@@ -1,28 +1,28 @@
-CXX      := -g++
-CXXFLAGS := -pedantic-errors -Wall -Wextra -Werror
-LDFLAGS  := -L/usr/lib -lstdc++ -lm
+CXX      := -gcc
+CXXFLAGS := -Wall
+# LDFLAGS  := -L/usr/lib -lstdc++ -lm
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
 APP_DIR  := $(BUILD)/apps
 TARGET   := program
 INCLUDE  := -Iinclude/
 SRC      :=                      \
-	$(wildcard src/module1/*.cpp) \
-	$(wildcard src/module2/*.cpp) \
-	$(wildcard src/module3/*.cpp) \
-	$(wildcard src/*.cpp)         \
+	$(wildcard src/module1/*.c) \
+	$(wildcard src/module2/*.c) \
+	$(wildcard src/module3/*.c) \
+	$(wildcard src/*.c)         \
 
-OBJECTS := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
+OBJECTS := $(SRC:%.c=$(OBJ_DIR)/%.o)
 
 all: build $(APP_DIR)/$(TARGET)
 
-$(OBJ_DIR)/%.o: %.cpp
+$(OBJ_DIR)/%.o: %.c
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) $(INCLUDE) -o $@ -c $<
 
 $(APP_DIR)/$(TARGET): $(OBJECTS)
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $(INCLUDE) $(LDFLAGS) -o $(APP_DIR)/$(TARGET) $(OBJECTS)
+	$(CXX) $(CXXFLAGS) $(INCLUDE) -o $(APP_DIR)/$(TARGET) $(OBJECTS)
 
 .PHONY: all build clean debug release
 
