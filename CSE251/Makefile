@@ -1,6 +1,7 @@
 CXX      := -gcc
 CXXFLAGS := -Wall
-# LDFLAGS  := -L/usr/lib -lstdc++ -lm
+#  adding the -lm switch (add library libm, the math library)
+LDFLAGS  := -lm
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
 APP_DIR  := $(BUILD)/apps
@@ -22,7 +23,7 @@ $(OBJ_DIR)/%.o: %.c
 
 $(APP_DIR)/$(TARGET): $(OBJECTS)
 	@mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) $(INCLUDE) -o $(APP_DIR)/$(TARGET) $(OBJECTS)
+	$(CXX) $(CXXFLAGS) $(INCLUDE) $(LDFLAGS) -o $(APP_DIR)/$(TARGET) $(OBJECTS)
 
 .PHONY: all build clean debug release
 

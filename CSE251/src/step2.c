@@ -10,5 +10,10 @@
 
 int main()
 {
-    printf("My first C program\n");
+    // printf("My first C program\n");
+
+    int win = 11;
+    int lost = 2;
+
+    printf("MSU had an %d-%d season in 2020!\n", win, lost);
 }
