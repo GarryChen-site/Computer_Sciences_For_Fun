@@ -10,7 +10,7 @@ INCLUDE  := -Iinclude/
 SRC      :=                      \
 	$(wildcard src/module1/*.c) \
 	$(wildcard src/module2/*.c) \
-	$(wildcard src/module3/*.c) \
+	$(wildcard src/chap3/*.c) \
 	$(wildcard src/*.c)         \
 
 OBJECTS := $(SRC:%.c=$(OBJ_DIR)/%.o)
