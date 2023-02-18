@@ -10,7 +10,8 @@ INCLUDE  := -Iinclude/
 SRC      :=                      \
 	$(wildcard src/module1/*.c) \
 	$(wildcard src/module2/*.c) \
-	$(wildcard src/chap8/*.c) \
+	$(wildcard src/chap9/*.c) \
+	# $(wildcard src/chap8/*.c) \
 	# $(wildcard src/chap7/*.c) \
 	# $(wildcard src/chap6/*.c) \
 	# $(wildcard src/chap5/*.c) \
