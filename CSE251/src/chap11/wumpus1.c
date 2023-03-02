@@ -45,6 +45,7 @@ int main()
     int cave[ArraySize + 2];
     int *agentRoom;
     int agentDirection;
+    int numArrows = 3;
 
     /* Seed the random number generator */
     srand(time(NULL));
@@ -62,27 +63,57 @@ int main()
         /* Get the command */
         printf("Command: ");
         scanf("%20s", command);	
-
-	if(strcmp(command, "quit") == 0)
+        if(strcmp(command, "quit") == 0)
         {
             /* Exit, we are doing */
             break;
         }
         else if(strcmp(command, "move") == 0)
         {
-            /* Move command */
-            /* What way do we need to go? */
-            int direction = DifferenceByDirection(agentDirection);
-            if( *(agentRoom + direction) != End)
-                agentRoom += direction;
+                /* Move command */
+                /* What way do we need to go? */
+                int direction = DifferenceByDirection(agentDirection);
+                if( *(agentRoom + direction) != End)
+                {
+                    agentRoom += direction;
+                }
         }
-	else if(strcmp(command, "turn") == 0)
+        else if(strcmp(command, "turn") == 0)
         {
-            agentDirection = !agentDirection;
+                agentDirection = !agentDirection;
+        }
+        else if (strcmp(command, "fire") == 0)
+        {
+            if (numArrows > 0) 
+            {
+                /* Fire the arrow*/
+                int direction = DifferenceByDirection(agentDirection);
+                int distance = 0;
+                int *room = agentRoom + direction;
+                while(distance < 3 && *room != End) 
+                {
+                    distance++;
+                    if (*room == Wumpus)
+                    {
+                /* You have killed the Wumpus! */
+                printf("You have killed the Wumpus!\n");
+                *room = Empty;
+                break; 
+                    }
+                    room += direction;
+                }
+                 numArrows--;
+                
+            }
+            else 
+            {
+                printf("You are out of arrows!\n");
+            }
+
         }
         else
         {
-            printf("I don't know what you are talking about\n");
+                printf("I don't know what you are talking about\n");
         }
     }
     
@@ -172,6 +203,22 @@ bool DisplayStatus(int cave[], int *agent)
     if(*(agent-1) == Wumpus || *(agent + 1) == Wumpus)
     {
         printf("I smell a Wumpus\n");
+    }
+
+        /* Check if the Wumpus is still alive */
+    bool wumpusAlive = false;
+    for (int i = 1; i < ArraySize - 1; i++)
+    {
+        if (cave[i] == Wumpus)
+        {
+            wumpusAlive = true;
+            break;
+        }
+    }
+    if (!wumpusAlive)
+    {
+        printf("You have won!\n");
+        return true;
     }
 
     /* We will return true to indicate we are dead! */
