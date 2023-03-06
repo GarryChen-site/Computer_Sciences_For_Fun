@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "transistors.h"
 
-void DisplayTransistor(struct Transistor tran)
+void DisplayTransistor(Tran tran)
 {
     printf("Number: %s\n", tran.number);
     switch(tran.type)
