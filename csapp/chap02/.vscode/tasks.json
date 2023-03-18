@@ -1,0 +1,57 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+		    "label": "make release",
+		    "type": "shell",
+		    "command": "docker run --rm -t -v ${workspaceFolder}:/work --workdir /work gcc make all",
+		    "problemMatcher": ["$gcc"],
+		    "group": "build"
+		},
+		{
+		    "label": "make debug",
+		    "type": "shell",
+		    "command": "docker run --rm -t -v ${workspaceFolder}:/work --workdir /work gcc make debug",
+		    "problemMatcher": ["$gcc"],
+		    "group": {
+			"kind": "build",
+			"isDefault": true
+		    }
+		},
+		{
+		    "label": "make btest",
+		    "type": "shell",
+		    "command": "docker run --rm -t -v ${workspaceFolder}:/work --workdir /work csapp_gcc make btest",
+		    "problemMatcher": ["$gcc"],
+		    "group": {
+			"kind": "build",
+			"isDefault": true
+		    }
+		},
+		{
+		    "label": "btest opt",
+		    "type": "shell",
+		    "command": "docker run --rm -t -v ${workspaceFolder}:/work --workdir /work csapp_gcc ./btest -f bitXor",
+		    "problemMatcher": ["$gcc"],
+		    "group": {
+			"kind": "build",
+			"isDefault": true
+		    }
+		},
+		{
+		    "label": "make clean",
+		    "type": "shell",
+		    "command": "docker run --rm -t -v ${workspaceFolder}:/work --workdir /work gcc make clean",
+		    "problemMatcher": ["$gcc"],
+		    "group": {
+			"kind": "build",
+			"isDefault": true
+		    }
+		},
+		{
+		    "label": "build docker gdb",
+		    "type": "shell",
+		    "command": "docker build -t gdb ${workspaceFolder}",
+		}
+	    ]
+}
