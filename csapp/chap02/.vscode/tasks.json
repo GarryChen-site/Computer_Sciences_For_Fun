@@ -31,7 +31,7 @@
 		{
 		    "label": "btest opt",
 		    "type": "shell",
-		    "command": "docker run --rm -t -v ${workspaceFolder}:/work --workdir /work csapp_gcc ./btest -f bitXor",
+		    "command": "docker run --rm -t -v ${workspaceFolder}:/work --workdir /work csapp_gcc ./btest -f tmin",
 		    "problemMatcher": ["$gcc"],
 		    "group": {
 			"kind": "build",

@@ -153,7 +153,10 @@ int bitXor(int x, int y) {
  */
 int tmin(void) {
 
-  return 2;
+  /* 0x80 is the smallest 8 bit number with the MSB(most significant bit) set to 1 */ 
+  /* 0x80 << 24 is the smallest 32 bit number with the MSB set to 1 */ 
+
+  return 0x80 << 24;
 
 }
 //2
