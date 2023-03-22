@@ -168,7 +168,9 @@ int tmin(void) {
  *   Rating: 1
  */
 int isTmax(int x) {
-  return 2;
+
+  x = ~x;
+  return !((x+1)^x); 
 }
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
@@ -189,7 +191,10 @@ int allOddBits(int x) {
  *   Rating: 2
  */
 int negate(int x) {
-  return 2;
+  /* First, we negate x using bitwise not (~) */
+  int negated_x = ~x;
+  /* Then we add one to the negated x */
+  return negated_x+1;
 }
 //3
 /* 
