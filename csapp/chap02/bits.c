@@ -167,10 +167,11 @@ int tmin(void) {
  *   Max ops: 10
  *   Rating: 1
  */
+#define toBool(x) (!!(x))
+#define equal(x, y) (!(x^y))
 int isTmax(int x) {
-
   x = ~x;
-  return !((x+1)^x); 
+  return equal(negate(x),x) & toBool(x);
 }
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
@@ -181,7 +182,15 @@ int isTmax(int x) {
  *   Rating: 2
  */
 int allOddBits(int x) {
-  return 2;
+  
+  /* 0xAA is 10101010 in binary */
+  /* 0xAA << 8 is 10101010 00000000 */
+  /* 0xAA << 16 is 10101010 00000000 00000000 */
+  /* 0xAA << 24 is 10101010 00000000 00000000 00000000 */
+  /* 0xAAAAAAAA is 10101010 10101010 10101010 10101010 */
+  int mask = 0xAA | (0xAA << 8);
+  mask = mask | (mask << 16);
+  return equal(mask&x,mask);
 }
 /* 
  * negate - return -x 
@@ -206,8 +215,9 @@ int negate(int x) {
  *   Max ops: 15
  *   Rating: 3
  */
+#define less_positive(x, y) (toBool((((x) + negate(y)) & tmin())))
 int isAsciiDigit(int x) {
-  return 2;
+  return equal(x >> 4, 0x3) & less_positive(x & 0xf, 0xA);
 }
 /* 
  * conditional - same as x ? y : z 
@@ -217,7 +227,8 @@ int isAsciiDigit(int x) {
  *   Rating: 3
  */
 int conditional(int x, int y, int z) {
-  return 2;
+  int flag = toBool(x);
+  return (flag & y) | (~flag & z);
 }
 /* 
  * isLessOrEqual - if x <= y  then return 1, else return 0 
