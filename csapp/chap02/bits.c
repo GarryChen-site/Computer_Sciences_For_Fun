@@ -227,7 +227,8 @@ int isAsciiDigit(int x) {
  *   Rating: 3
  */
 int conditional(int x, int y, int z) {
-  int flag = toBool(x);
+  // negate(1) 1111 1111
+  int flag = negate(toBool(x));
   return (flag & y) | (~flag & z);
 }
 /* 
