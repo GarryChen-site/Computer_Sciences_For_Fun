@@ -238,8 +238,18 @@ int conditional(int x, int y, int z) {
  *   Max ops: 24
  *   Rating: 3
  */
+inline static int less(int x, int y) {
+
+  #define flagx ( x & tmin())
+  #define flagy ( y & tmin())
+  #define notE (flagx ^ flagy)
+
+    // if x is negative and y is positive, then x < y, else use less_positive
+  return conditional(notE, flagx >> 31, less_positive(x, y));
+}
+
 int isLessOrEqual(int x, int y) {
-  return 2;
+  return less(x, y) | equal(x, y);
 }
 //4
 /* 
@@ -251,7 +261,9 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 4 
  */
 int logicalNeg(int x) {
-  return 2;
+  
+  return ((x | (~x + 1)) >> 31) + 1;
+
 }
 /* howManyBits - return the minimum number of bits required to represent x in
  *             two's complement

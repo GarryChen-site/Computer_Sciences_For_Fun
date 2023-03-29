@@ -1,6 +1,20 @@
 {
     "files.associations": {
         "limits.h": "c",
-        "setjmp.h": "c"
+        "setjmp.h": "c",
+        "__threading_support": "c",
+        "compare": "c",
+        "functional": "c",
+        "queue": "c",
+        "variant": "c",
+        "bit": "c",
+        "*.tcc": "c",
+        "chrono": "c",
+        "memory": "c",
+        "memory_resource": "c",
+        "algorithm": "c",
+        "limits": "c",
+        "optional": "c",
+        "system_error": "c"
     }
 }
