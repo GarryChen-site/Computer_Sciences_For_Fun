@@ -20,6 +20,9 @@ ishow: ishow.c
 btestexplicit:
 	$(CC) $(CFLAGS) $(LIBS) -o btest bits.c btest.c decl.c tests.c 
 
+debug: CFLAGS += -g
+debug: all
+
 clean:
 	rm -f *.o btest fshow ishow *~
 

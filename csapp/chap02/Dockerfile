@@ -1,13 +1,16 @@
 # Use an official Ubuntu image as a parent
 FROM ubuntu:latest
 
-# Set the working directory to /app
 
 
 # Update package list and install necessary packages
 RUN apt-get update && \
-    apt-get install -y gcc gdb make && \
+    apt-get install -y gcc gdb make gdbserver && \
     apt-get install -y gcc-multilib g++-multilib
+
+RUN echo "set auto-load safe-path /" >> /root/.gdbinit
+
+
 
 # Set environment variables for 32-bit compilation
 ENV CC="gcc -m32"
@@ -23,3 +26,5 @@ ENV AS64="as --64"
 
 # Set the default command to run when the container starts
 
+
+# docker build -t c-project-debug .

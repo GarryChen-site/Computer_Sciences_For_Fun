@@ -261,8 +261,11 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 4 
  */
 int logicalNeg(int x) {
-  
-  return ((x | (~x + 1)) >> 31) + 1;
+  int tmp = x | (~x + 1);
+  // right shifts arithmetically
+  // 1111 1100 >> 1 = 1111 1110
+  int tmp2 = tmp >> 31; 
+  return tmp2 + 1;
 
 }
 /* howManyBits - return the minimum number of bits required to represent x in
