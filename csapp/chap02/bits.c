@@ -281,7 +281,37 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
-  return 0;
+   // explain -5 = 4
+   // first, start with binary representation of 5: "0101"
+   // then, negate it: "1010"
+   // then, add 1: "1011"
+   // the result is 4 bits
+
+   // explain 12 = 5
+    // first, start with binary representation of 12: "1100"
+    // then, add sign bit '0'
+    // the result is 5 bits
+    
+    // not negate(x)
+   x = conditional(x & tmin(), ~x, x);
+
+    int bit16 = (toBool((x >> 16)) << 4);  // determine if high 16 bits have 1
+    x = x >> bit16;                        // if yes, low 16 bits are discarded
+
+    int bit8 = (toBool((x >> 8)) << 3);  // determine if high 8 bits have 1
+    x = x >> bit8;                       // if yes, low 8 bits are discarded
+
+    int bit4 = (toBool((x >> 4)) << 2);  
+    x = x >> bit4;                       
+
+    int bit2 = (toBool((x >> 2)) << 1);  
+    x = x >> bit2;                       
+
+    int bit1 = (toBool((x >> 1)) << 0);  
+    x = x >> bit1;                       
+
+    int bit0 = (toBool(x));
+    return bit16 + bit8 + bit4 + bit2 + bit1 + bit0 + 1;
 }
 //float
 /* 
