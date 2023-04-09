@@ -326,7 +326,17 @@ int howManyBits(int x) {
  *   Rating: 4
  */
 unsigned floatScale2(unsigned uf) {
-  return 2;
+
+  unsigned s = uf & (1 << 31);
+  unsigned exp = (uf & 0x7f800000) >> 23;
+  unsigned frac = uf & 0x007fffff;
+
+  if (exp == 0) return s | (frac << 1);
+  if (exp == 255) return uf;
+  exp++;
+  if (exp == 255) return s | 0x7f800000;
+
+  return s | (exp << 23) | frac;
 }
 /* 
  * floatFloat2Int - Return bit-level equivalent of expression (int) f
@@ -341,7 +351,25 @@ unsigned floatScale2(unsigned uf) {
  *   Rating: 4
  */
 int floatFloat2Int(unsigned uf) {
-  return 2;
+  // uf is like "0x40000000" ,"0x40490fdb"(3.14159274)
+  unsigned s = uf & (1 << 31);
+  unsigned exp = (uf & 0x7f800000) >> 23;
+  unsigned frac = uf & 0x007fffff;
+
+  // inf: exp = 255, frac = 0
+  // NaN: exp = 255, frac != 0
+
+  int E = exp - 127;
+  if (exp == 255 || E > 31) return 0x80000000u;
+  if (E < 0) return 0;
+
+  unsigned M = frac | (1 << 23); // frac + 1
+  // E compare to 23 because M is decimal
+  int V = (E > 23 ? M << (E - 23) : M >> (23 - E));
+
+  if (s) V *= -1;
+
+  return V;
 }
 /* 
  * floatPower2 - Return bit-level equivalent of the expression 2.0^x
@@ -357,5 +385,18 @@ int floatFloat2Int(unsigned uf) {
  *   Rating: 4
  */
 unsigned floatPower2(int x) {
-    return 2;
+  // E = e - 127 (-126 ~ 127)
+  // V = 1 * 2^E
+  // x it the E
+  // the maximum finite positive number has an exponent of 127.
+  if (x >= 128) return 0x7f800000;
+  // the minimum finite positive number has an exponent of -126.
+  if (x >= -126) return (x + 127) << 23;
+  // -150 < x < -126 , remain 23 bits
+  if (x >= -150) 
+  {
+    return 1 << (x + 150);
+  } else {
+    return 0;
+  }
 }
