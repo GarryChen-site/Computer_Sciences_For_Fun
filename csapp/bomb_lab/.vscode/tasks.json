@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+		    "label": "make bomb debug",
+		    "type": "shell",
+		    "command": "docker run --rm -t -v ${workspaceFolder}:/work --workdir /work bomb:v1 /bin/sh",
+		    "problemMatcher": ["$gcc"],
+		    "group": {
+				"kind": "build",
+				"isDefault": true
+		    }
+        }
+    ]
+}
