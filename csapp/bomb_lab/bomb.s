@@ -382,18 +382,18 @@ Disassembly of section .text:
 
 0000000000400f43 <phase_3>:
   400f43:	48 83 ec 18          	sub    $0x18,%rsp
-  400f47:	48 8d 4c 24 0c       	lea    0xc(%rsp),%rcx
-  400f4c:	48 8d 54 24 08       	lea    0x8(%rsp),%rdx
-  400f51:	be cf 25 40 00       	mov    $0x4025cf,%esi
+  400f47:	48 8d 4c 24 0c       	lea    0xc(%rsp),%rcx # 4th ?
+  400f4c:	48 8d 54 24 08       	lea    0x8(%rsp),%rdx # 3rd ?
+  400f51:	be cf 25 40 00       	mov    $0x4025cf,%esi # 2nd %d %d
   400f56:	b8 00 00 00 00       	mov    $0x0,%eax
   400f5b:	e8 90 fc ff ff       	call   400bf0 <__isoc99_sscanf@plt>
   400f60:	83 f8 01             	cmp    $0x1,%eax
   400f63:	7f 05                	jg     400f6a <phase_3+0x27>
   400f65:	e8 d0 04 00 00       	call   40143a <explode_bomb>
   400f6a:	83 7c 24 08 07       	cmpl   $0x7,0x8(%rsp)
-  400f6f:	77 3c                	ja     400fad <phase_3+0x6a>
+  400f6f:	77 3c                	ja     400fad <phase_3+0x6a> # 1st greater than 7, jump to explode_bomb
   400f71:	8b 44 24 08          	mov    0x8(%rsp),%eax
-  400f75:	ff 24 c5 70 24 40 00 	jmp    *0x402470(,%rax,8)
+  400f75:	ff 24 c5 70 24 40 00 	jmp    *0x402470(,%rax,8) # may be a external array
   400f7c:	b8 cf 00 00 00       	mov    $0xcf,%eax
   400f81:	eb 3b                	jmp    400fbe <phase_3+0x7b>
   400f83:	b8 c3 02 00 00       	mov    $0x2c3,%eax
@@ -420,13 +420,13 @@ Disassembly of section .text:
 
 0000000000400fce <func4>:
   400fce:	48 83 ec 08          	sub    $0x8,%rsp
-  400fd2:	89 d0                	mov    %edx,%eax
-  400fd4:	29 f0                	sub    %esi,%eax
-  400fd6:	89 c1                	mov    %eax,%ecx
-  400fd8:	c1 e9 1f             	shr    $0x1f,%ecx
-  400fdb:	01 c8                	add    %ecx,%eax
-  400fdd:	d1 f8                	sar    %eax
-  400fdf:	8d 0c 30             	lea    (%rax,%rsi,1),%ecx
+  400fd2:	89 d0                	mov    %edx,%eax # edx = 0xe
+  400fd4:	29 f0                	sub    %esi,%eax # eax = 0xe - 0x0
+  400fd6:	89 c1                	mov    %eax,%ecx # ecx = 0xe
+  400fd8:	c1 e9 1f             	shr    $0x1f,%ecx # ecx = ecx >> 0x1f = 0
+  400fdb:	01 c8                	add    %ecx,%eax # eax = 0xe
+  400fdd:	d1 f8                	sar    %eax # eax = eax >> 1 = 0x7
+  400fdf:	8d 0c 30             	lea    (%rax,%rsi,1),%ecx # ecx = 1 * rsi + rax = 0x0 + 0x7 = 0x7
   400fe2:	39 f9                	cmp    %edi,%ecx
   400fe4:	7e 0c                	jle    400ff2 <func4+0x24>
   400fe6:	8d 51 ff             	lea    -0x1(%rcx),%edx
@@ -449,16 +449,16 @@ Disassembly of section .text:
   40101a:	be cf 25 40 00       	mov    $0x4025cf,%esi
   40101f:	b8 00 00 00 00       	mov    $0x0,%eax
   401024:	e8 c7 fb ff ff       	call   400bf0 <__isoc99_sscanf@plt>
-  401029:	83 f8 02             	cmp    $0x2,%eax
+  401029:	83 f8 02             	cmp    $0x2,%eax  # compare the number of input
   40102c:	75 07                	jne    401035 <phase_4+0x29>
-  40102e:	83 7c 24 08 0e       	cmpl   $0xe,0x8(%rsp)
-  401033:	76 05                	jbe    40103a <phase_4+0x2e>
+  40102e:	83 7c 24 08 0e       	cmpl   $0xe,0x8(%rsp) # compare the first input vs 0xe
+  401033:	76 05                	jbe    40103a <phase_4+0x2e> # if less than or equal to 0xe, jump to 40103a
   401035:	e8 00 04 00 00       	call   40143a <explode_bomb>
-  40103a:	ba 0e 00 00 00       	mov    $0xe,%edx
-  40103f:	be 00 00 00 00       	mov    $0x0,%esi
-  401044:	8b 7c 24 08          	mov    0x8(%rsp),%edi
+  40103a:	ba 0e 00 00 00       	mov    $0xe,%edx # third arg
+  40103f:	be 00 00 00 00       	mov    $0x0,%esi # second arg
+  401044:	8b 7c 24 08          	mov    0x8(%rsp),%edi # first arg
   401048:	e8 81 ff ff ff       	call   400fce <func4>
-  40104d:	85 c0                	test   %eax,%eax
+  40104d:	85 c0                	test   %eax,%eax # if eax is 0, jump to 401058
   40104f:	75 07                	jne    401058 <phase_4+0x4c>
   401051:	83 7c 24 0c 00       	cmpl   $0x0,0xc(%rsp)
   401056:	74 05                	je     40105d <phase_4+0x51>
@@ -806,9 +806,9 @@ Disassembly of section .text:
   401460:	48 89 f2             	mov    %rsi,%rdx # 3rd
   401463:	48 8d 4e 04          	lea    0x4(%rsi),%rcx # 4th
   401467:	48 8d 46 14          	lea    0x14(%rsi),%rax
-  40146b:	48 89 44 24 08       	mov    %rax,0x8(%rsp) # 7th
+  40146b:	48 89 44 24 08       	mov    %rax,0x8(%rsp) # 8th
   401470:	48 8d 46 10          	lea    0x10(%rsi),%rax # ofsset 16
-  401474:	48 89 04 24          	mov    %rax,(%rsp) # 8th
+  401474:	48 89 04 24          	mov    %rax,(%rsp) # 7th
   401478:	4c 8d 4e 0c          	lea    0xc(%rsi),%r9 # 6th
   40147c:	4c 8d 46 08          	lea    0x8(%rsi),%r8 # 5th
   401480:	be c3 25 40 00       	mov    $0x4025c3,%esi # 2nd # print (char*)0x4025c3 
