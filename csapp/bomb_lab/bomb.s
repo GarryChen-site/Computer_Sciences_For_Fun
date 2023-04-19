@@ -475,23 +475,23 @@ Disassembly of section .text:
   401073:	48 89 44 24 18       	mov    %rax,0x18(%rsp)
   401078:	31 c0                	xor    %eax,%eax
   40107a:	e8 9c 02 00 00       	call   40131b <string_length>
-  40107f:	83 f8 06             	cmp    $0x6,%eax
+  40107f:	83 f8 06             	cmp    $0x6,%eax # compare the length of the input
   401082:	74 4e                	je     4010d2 <phase_5+0x70>
   401084:	e8 b1 03 00 00       	call   40143a <explode_bomb>
   401089:	eb 47                	jmp    4010d2 <phase_5+0x70>
-  40108b:	0f b6 0c 03          	movzbl (%rbx,%rax,1),%ecx
+  40108b:	0f b6 0c 03          	movzbl (%rbx,%rax,1),%ecx # for i in range(6)
   40108f:	88 0c 24             	mov    %cl,(%rsp)
   401092:	48 8b 14 24          	mov    (%rsp),%rdx
-  401096:	83 e2 0f             	and    $0xf,%edx
-  401099:	0f b6 92 b0 24 40 00 	movzbl 0x4024b0(%rdx),%edx
-  4010a0:	88 54 04 10          	mov    %dl,0x10(%rsp,%rax,1)
-  4010a4:	48 83 c0 01          	add    $0x1,%rax
+  401096:	83 e2 0f             	and    $0xf,%edx # get the last 4 bits
+  401099:	0f b6 92 b0 24 40 00 	movzbl 0x4024b0(%rdx),%edx # 0x4024b0[*rdx] -> edx  ##0x4024b0 ->  maduiersnfotvbylSo you think you can stop the bomb with ctrl-c, do you?
+  4010a0:	88 54 04 10          	mov    %dl,0x10(%rsp,%rax,1) # store that byte in ith stack local variable area above 0x10(%rsp)
+  4010a4:	48 83 c0 01          	add    $0x1,%rax # rax++
   4010a8:	48 83 f8 06          	cmp    $0x6,%rax
   4010ac:	75 dd                	jne    40108b <phase_5+0x29>
-  4010ae:	c6 44 24 16 00       	movb   $0x0,0x16(%rsp)
-  4010b3:	be 5e 24 40 00       	mov    $0x40245e,%esi
+  4010ae:	c6 44 24 16 00       	movb   $0x0,0x16(%rsp) 
+  4010b3:	be 5e 24 40 00       	mov    $0x40245e,%esi # flyers
   4010b8:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
-  4010bd:	e8 76 02 00 00       	call   401338 <strings_not_equal>
+  4010bd:	e8 76 02 00 00       	call   401338 <strings_not_equal> # 6 chars , rdi[each char's last 4 bits] == esi["flyers"]
   4010c2:	85 c0                	test   %eax,%eax
   4010c4:	74 13                	je     4010d9 <phase_5+0x77>
   4010c6:	e8 6f 03 00 00       	call   40143a <explode_bomb>
