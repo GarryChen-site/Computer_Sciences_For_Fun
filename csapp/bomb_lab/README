@@ -27,6 +27,9 @@ phase_4
 
 7 0
 
+## seceret phase
+# 7 0 DrEvil
+
 phase_5
 
 IONEFG
@@ -36,3 +39,6 @@ phase_6
 4 3 2 1 6 5
 
 # p $eax || x /d 0x6032f0 || p *(int*)0x6032f0 || b *0x40116f
+
+secret phase
+22
