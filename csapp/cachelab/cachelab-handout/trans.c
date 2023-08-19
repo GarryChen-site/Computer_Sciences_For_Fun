@@ -78,75 +78,66 @@ void solve_32(int M, int N, int A[N][M], int B[M][N]) {
 }
 
 void solve_64(int M, int N, int A[N][M], int B[M][N]) {
-    int i, j;
+		int i, j, x, y;
+		int x1, x2, x3, x4, x5, x6, x7, x8;
+		for (i = 0; i < N; i += 8)
+			for (j = 0; j < M; j += 8)
+			{
+				for (x = i; x < i + 4; ++x)
+				{
+					x1 = A[x][j]; 
+                    x2 = A[x][j+1]; 
+                    x3 = A[x][j+2]; 
+                    x4 = A[x][j+3];
+					x5 = A[x][j+4]; 
+                    x6 = A[x][j+5]; 
+                    x7 = A[x][j+6]; 
+                    x8 = A[x][j+7];
+					
+					B[j][x] = x1; 
+                    B[j+1][x] = x2; 
+                    B[j+2][x] = x3; 
+                    B[j+3][x] = x4;
+					B[j][x+4] = x5; 
+                    B[j+1][x+4] = x6; 
+                    B[j+2][x+4] = x7; 
+                    B[j+3][x+4] = x8;
+				}
+				for (y = j; y < j + 4; ++y)
+				{
+					x1 = A[i+4][y]; 
+                    x2 = A[i+5][y]; 
+                    x3 = A[i+6][y]; 
+                    x4 = A[i+7][y];
 
-    for (i=0; i<N; i+=8) {
-        for (j=0; j<M; j+=8) {
-            int temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8, cnt;
-            for (cnt = 0; cnt < 4; cnt++, i++) {
-                // left top
-                temp1 = A[i][j];
-                temp2 = A[i][j+1];
-                temp3 = A[i][j+2];
-                temp4 = A[i][j+3];
+					x5 = B[y][i+4]; 
+                    x6 = B[y][i+5]; 
+                    x7 = B[y][i+6]; 
+                    x8 = B[y][i+7];
+					
+					B[y][i+4] = x1; 
+                    B[y][i+5] = x2; 
+                    B[y][i+6] = x3; 
+                    B[y][i+7] = x4;
 
-                // right top
-                temp5 = A[i][j+4];
-                temp6 = A[i][j+5];
-                temp7 = A[i][j+6];
-                temp8 = A[i][j+7];
+					B[y+4][i] = x5; 
+                    B[y+4][i+1] = x6; 
+                    B[y+4][i+2] = x7; 
+                    B[y+4][i+3] = x8;
+				}
+				for (x = i + 4; x < i + 8; ++x)
+				{
+					x1 = A[x][j+4]; 
+                    x2 = A[x][j+5]; 
+                    x3 = A[x][j+6]; 
+                    x4 = A[x][j+7];
 
-                B[j][i] = temp1;
-                B[j+1][i] = temp2;
-                B[j+2][i] = temp3;
-                B[j+3][i] = temp4;
-
-                // A right top -> B right top
-                B[j][i+4] = temp5;
-                B[j+1][i+4] = temp6;
-                B[j+2][i+4] = temp7;
-                B[j+3][i+4] = temp8;
-            }
-            i -= 4;
-            for (cnt = 0; cnt < 4; j++, cnt++) {
-                // A left bottom
-                temp1 = A[i+4][j];
-                temp2 = A[i+5][j];
-                temp3 = A[i+6][j];
-                temp4 = A[i+7][j];
-
-                // B right top, i.e. A right top
-                temp5 = B[j][i+4];
-                temp6 = B[j][i+5];
-                temp7 = B[j][i+6];
-                temp8 = B[j][i+7];
-
-                // A left bottom -> B right top
-                B[j][i+4] = temp1;
-                B[j][i+5] = temp2;
-                B[j][i+6] = temp3;
-                B[j][i+7] = temp4;
-
-                // B right top -> B left bottom
-                B[j+4][i] = temp5;
-                B[j+4][i+1] = temp6;
-                B[j+4][i+2] = temp7;
-                B[j+4][i+3] = temp8;
-            }
-            for(i +=4, cnt =0; cnt < 4; cnt++, i++) {
-                temp1 = A[i][j];
-                temp2 = A[i][j+1];
-                temp3 = A[i][j+2];
-                temp4 = A[i][j+3];
-
-                B[j][i] = temp1;
-                B[j+1][i] = temp2;
-                B[j+2][i] = temp3;
-                B[j+3][i] = temp4;
-            }
-            i -= 8, j -= 4;
-        }
-    }
+					B[j+4][x] = x1; 
+                    B[j+5][x] = x2; 
+                    B[j+6][x] = x3; 
+                    B[j+7][x] = x4;
+				}
+			}
 }
 
 void solve_61(int M, int N, int A[N][M], int B[M][N]) {
