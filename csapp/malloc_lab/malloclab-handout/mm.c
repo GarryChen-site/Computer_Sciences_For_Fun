@@ -24,7 +24,7 @@
  ********************************************************/
 team_t team = {
     /* Team name */
-    "wilson",
+    "Project R",
     /* First member's full name */
     "Garry Chen",
     /* First member's email address */
@@ -38,9 +38,8 @@ team_t team = {
 #define ALIGNMENT 8
 
 /* rounds up to the nearest multiple of ALIGNMENT */
-#define ALIGN(size) (((size) + (ALIGNMENT - 1)) & ~0x7)
+#define ALIGN(size) ((((size) + (ALIGNMENT-1)) / (ALIGNMENT)) * (ALIGNMENT))
 
-#define SIZE_T_SIZE (ALIGN(sizeof(size_t)))
 
 #define WSIZE 4
 #define DSIZE 8
@@ -50,7 +49,7 @@ team_t team = {
 #define LISTMAX 16
 
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
-#define MIN(x, y) ((x) > (y) ? (y) : (x))
+#define MIN(x, y) ((x) < (y) ? (y) : (x))
 
 #define PACK(size, alloc) ((size) | (alloc))
 
@@ -63,29 +62,29 @@ team_t team = {
 #define GET_SIZE(p) (GET(p) & ~0x7)
 #define GET_ALLOC(p) (GET(p) & 0x1)
 
-#define HDRP(bp) ((char *)(bp)-WSIZE)
-#define FTRP(bp) ((char *)(bp) + GET_SIZE(HDRP(bp)) - DSIZE)
+#define HDRP(ptr) ((char *)(ptr)-WSIZE)
+#define FTRP(ptr) ((char *)(ptr) + GET_SIZE(HDRP(ptr)) - DSIZE)
 
-#define NEXT_BLKP(bp) ((char *)(bp) + GET_SIZE(((char *)(bp)-WSIZE)))
-#define PREV_BLKP(bp) ((char *)(bp)-GET_SIZE(((char *)(bp)-DSIZE)))
+#define NEXT_BLKP(ptr) ((char *)(ptr) + GET_SIZE(((char *)(ptr)-WSIZE)))
+#define PREV_BLKP(ptr) ((char *)(ptr)-GET_SIZE(((char *)(ptr)-DSIZE)))
 
-#define PRED_PTR(bp) ((char *)(bp))
-#define SUCC_PTR(bp) ((char *)(bp) + WSIZE)
+#define PRED_PTR(ptr) ((char *)(ptr))
+#define SUCC_PTR(ptr) ((char *)(ptr) + WSIZE)
 
 // get the predecessor block
-#define PRED(bp) (*(char **)(bp))
+#define PRED(ptr) (*(char **)(ptr))
 // get the successor block
-#define SUCC(bp) (*(char **)(SUCC_PTR(bp)))
+#define SUCC(ptr) (*(char **)(SUCC_PTR(ptr)))
 
 void *segregated_free_lists[LISTMAX];
 
 static void *extend_heap(size_t size);
-static void *coalesce(void *bp);
-static void *place(void *bp, size_t size);
+static void *coalesce(void *ptr);
+static void *place(void *ptr, size_t size);
 /* insert free block into segregated free list */
-static void insert_node(void *bp, size_t size);
+static void insert_node(void *ptr, size_t size);
 /* delete free block from segregated free list */
-static void delete_node(void *bp);
+static void delete_node(void *ptr);
 
 static void *extend_heap(size_t size)
 {
@@ -150,15 +149,15 @@ static void insert_node(void *ptr, size_t size)
         if (insert_ptr != NULL)
         {
             // -> xx -> insert
-            SET_PTR(PRED_PTR(ptr), insert_ptr);
-            SET_PTR(SUCC_PTR(insert_ptr), ptr);
-            SET_PTR(SUCC_PTR(ptr), NULL);
+            SET_PTR(PRED_PTR(ptr), NULL);
+            SET_PTR(SUCC_PTR(ptr), insert_ptr);
+            SET_PTR(PRED_PTR(insert_ptr), ptr);
         }
         else
         {
             // insert to the first place, and the list is empty
             SET_PTR(PRED_PTR(ptr), NULL);
-            SET_PTR(SUCC_PTR(ptr), insert_ptr);
+            SET_PTR(SUCC_PTR(ptr), NULL);
             segregated_free_lists[listNum] = ptr;
         }
     }
@@ -242,7 +241,7 @@ static void *coalesce(void *ptr)
         delete_node(ptr);
         delete_node(PREV_BLKP(ptr));
         delete_node(NEXT_BLKP(ptr));
-        size += GET_SIZE(HDRP(PREV_BLKP(ptr))) + GET_SIZE(FTRP(NEXT_BLKP(ptr)));
+        size += GET_SIZE(HDRP(PREV_BLKP(ptr))) + GET_SIZE(HDRP(NEXT_BLKP(ptr)));
         PUT(HDRP(PREV_BLKP(ptr)), PACK(size, 0));
         PUT(FTRP(NEXT_BLKP(ptr)), PACK(size, 0));
         ptr = PREV_BLKP(ptr);
@@ -257,6 +256,9 @@ static void *place(void *ptr, size_t size)
     size_t ptr_size = GET_SIZE(HDRP(ptr));
 
     size_t remainder = ptr_size - size;
+
+    // delete the free block from segregated free list
+    delete_node(ptr);
 
     if (remainder < DSIZE * 2)
     {
@@ -418,7 +420,7 @@ void *mm_realloc(void *ptr, size_t size)
     else 
     {
         new_block = mm_malloc(size);
-        memcpy(new_block, ptr, MIN(size, GET_SIZE(HDRP(ptr))));
+        memcpy(new_block, ptr, GET_SIZE(HDRP(ptr)));
         mm_free(ptr);
     }
     return new_block;
