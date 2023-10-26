@@ -1,0 +1,44 @@
+
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+		    "label": "make debug",
+		    "type": "shell",
+		    "command": "docker run --rm -t -v ${workspaceFolder}/malloclab-handout:/work --workdir /work bomb:v3 make",
+		    "problemMatcher": ["$gcc"],
+		    "group": {
+				"kind": "build",
+				"isDefault": true
+		    }
+		},
+        {
+		    "label": "make test",
+		    "type": "shell",
+		    // "command": "docker run --rm -t -v ${workspaceFolder}:/work --workdir /work/vm/malloc bomb:v3 ./mdriver -t ./traces/",
+		    // "command": "docker run --rm -t -v ${workspaceFolder}/malloclab-handout:/work --workdir /work bomb:v3 ./mdriver -V -f short1-bal.rep -v 1",
+		    // "command": "docker run --rm -t -v ${workspaceFolder}:/work --workdir /work/vm/malloc bomb:v3 ./mdriver -V -f traces/fs.rep -v 1",
+		    "command": "docker run --rm -t -v ${workspaceFolder}/malloclab-handout:/work --workdir /work bomb:v3 ./mdriver  -t traces/ -v 1",
+		    "problemMatcher": ["$gcc"],
+		    "group": {
+				"kind": "build",
+				"isDefault": true
+		    }
+		},
+        {
+		    "label": "make clean",
+		    "type": "shell",
+		    "command": "docker run --rm -t -v ${workspaceFolder}/malloclab-handout:/work --workdir /work bomb:v3 make clean",
+		    "problemMatcher": ["$gcc"],
+		    "group": {
+				"kind": "build",
+				"isDefault": true
+		    }
+		},
+        {
+            "label": "tar",
+            "type": "shell",
+            "command": "docker run --rm -t -v ${workspaceFolder}:/work --workdir /work bomb:v3 make tar",
+        }
+	]
+}
