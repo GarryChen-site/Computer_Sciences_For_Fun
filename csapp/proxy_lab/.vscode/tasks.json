@@ -5,7 +5,7 @@
 		{
 		    "label": "make debug",
 		    "type": "shell",
-		    "command": "docker run --rm -t -v ${workspaceFolder}/malloclab-handout:/work --workdir /work bomb:v3 make",
+		    "command": "docker run --rm -t -v ${workspaceFolder}/proxy:/work --workdir /work bomb:v6 make",
 		    "problemMatcher": ["$gcc"],
 		    "group": {
 				"kind": "build",
@@ -13,12 +13,9 @@
 		    }
 		},
         {
-		    "label": "make test",
+		    "label": "run",
 		    "type": "shell",
-		    // "command": "docker run --rm -t -v ${workspaceFolder}:/work --workdir /work/vm/malloc bomb:v3 ./mdriver -t ./traces/",
-		    // "command": "docker run --rm -t -v ${workspaceFolder}/malloclab-handout:/work --workdir /work bomb:v3 ./mdriver -V -f short1-bal.rep -v 1",
-		    // "command": "docker run --rm -t -v ${workspaceFolder}:/work --workdir /work/vm/malloc bomb:v3 ./mdriver -V -f traces/fs.rep -v 1",
-		    "command": "docker run --rm -t -v ${workspaceFolder}/malloclab-handout:/work --workdir /work bomb:v3 ./mdriver  -t traces/ -v 1",
+		    "command": "docker run --rm -t -v ${workspaceFolder}/proxy:/work --workdir /work bomb:v6 ./driver.sh",
 		    "problemMatcher": ["$gcc"],
 		    "group": {
 				"kind": "build",
@@ -28,7 +25,17 @@
         {
 		    "label": "make clean",
 		    "type": "shell",
-		    "command": "docker run --rm -t -v ${workspaceFolder}/malloclab-handout:/work --workdir /work bomb:v3 make clean",
+		    "command": "docker run --rm -t -v ${workspaceFolder}/proxy:/work --workdir /work bomb:v6 make clean",
+		    "problemMatcher": ["$gcc"],
+		    "group": {
+				"kind": "build",
+				"isDefault": true
+		    }
+		},
+		{
+		    "label": "make tiny clean",
+		    "type": "shell",
+		    "command": "docker run --rm -t -v ${workspaceFolder}/proxy:/work --workdir /work/tiny bomb:v6 make clean",
 		    "problemMatcher": ["$gcc"],
 		    "group": {
 				"kind": "build",
