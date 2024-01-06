@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+		    "label": "lab01",
+		    "type": "shell",
+		    "command": "docker run --rm -t -v ${workspaceFolder}/lab01/exercise4:/work --workdir /work cs61c:v1 /bin/sh",
+		    "problemMatcher": ["$gcc"],
+		    "group": {
+				"kind": "build",
+				"isDefault": true
+		    }
+        }
+    ]
+}
