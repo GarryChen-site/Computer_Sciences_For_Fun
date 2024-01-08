@@ -9,6 +9,8 @@ RUN echo "set auto-load safe-path /" >> /root/.gdbinit
 RUN apt-get install bison flex -y && \
     apt-get install tcl-dev tk-dev -y
 
+RUN apt-get install -y valgrind
+
 
 COPY installCgdb.sh /
 

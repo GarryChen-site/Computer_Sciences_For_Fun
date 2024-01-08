@@ -10,6 +10,16 @@
 				"kind": "build",
 				"isDefault": true
 		    }
-        }
+        },
+		{
+			"label": "lab02",
+		    "type": "shell",
+		    "command": "docker run --rm -t -v ${workspaceFolder}/lab02:/work --workdir /work cs61c:v1 /bin/sh",
+		    "problemMatcher": ["$gcc"],
+		    "group": {
+				"kind": "build",
+				"isDefault": true
+		    }
+        }					
     ]
 }
