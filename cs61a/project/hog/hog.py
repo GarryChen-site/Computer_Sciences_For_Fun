@@ -24,6 +24,18 @@ def roll_dice(num_rolls, dice=six_sided):
     # BEGIN PROBLEM 1
     "*** YOUR CODE HERE ***"
     # END PROBLEM 1
+    sumOfDice = 0
+    one = False # call dice() exactly num_rolls times even if *Pig Out* happens in the middle of rolling.
+    
+    for i in range(0,num_rolls):
+        res = dice()
+        if res == 1:
+            one = True
+        sumOfDice += res
+    
+    if one == 1:
+        return 1
+    return sumOfDice
 
 
 def free_bacon(score):
@@ -38,6 +50,9 @@ def free_bacon(score):
     # BEGIN PROBLEM 2
     "*** YOUR CODE HERE ***"
     # END PROBLEM 2
+
+    while not(pi < pow(10, score + 1) and pi >= pow(10, score)):
+        pi = pi // 10
 
     return pi % 10 + 3
 
@@ -59,11 +74,21 @@ def take_turn(num_rolls, opponent_score, dice=six_sided):
     "*** YOUR CODE HERE ***"
     # END PROBLEM 3
 
+    if num_rolls == 0:
+        return free_bacon(opponent_score)
+    return roll_dice(num_rolls, dice)
+
 
 def extra_turn(player_score, opponent_score):
     """Return whether the player gets an extra turn."""
     return (pig_pass(player_score, opponent_score) or
             swine_align(player_score, opponent_score))
+
+def computeGCD(x, y):
+    if y == 0:
+        return x
+    else: 
+        return computeGCD(y,x % y)
 
 
 def swine_align(player_score, opponent_score):
@@ -80,6 +105,12 @@ def swine_align(player_score, opponent_score):
     # BEGIN PROBLEM 4a
     "*** YOUR CODE HERE ***"
     # END PROBLEM 4a
+
+    if not player_score or not opponent_score:
+        return False
+    if computeGCD(player_score, opponent_score) >= 10:
+        return True
+    return False
 
 
 def pig_pass(player_score, opponent_score):
@@ -102,6 +133,10 @@ def pig_pass(player_score, opponent_score):
     # BEGIN PROBLEM 4b
     "*** YOUR CODE HERE ***"
     # END PROBLEM 4b
+
+    if opponent_score - player_score > 0 and opponent_score - player_score < 3:
+        return True
+    return False
 
 
 def other(who):
@@ -145,6 +180,19 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
     # BEGIN PROBLEM 6
     "*** YOUR CODE HERE ***"
     # END PROBLEM 6
+
+    while score0 < goal and score1 < goal:
+        if who == 0:
+            num_rolls = strategy0(score0, score1)
+            score0 += take_turn(num_rolls, score1, dice)
+        else:
+            num_rolls = strategy1(score1, score0)
+            score1 += take_turn(num_rolls, score0, dice)
+        if extra_turn(score0, score1):
+            who = who
+        else:
+            who = other(who)
+        say = say(score0, score1)
     return score0, score1
 
 
@@ -230,6 +278,17 @@ def announce_highest(who, last_score=0, running_high=0):
     "*** YOUR CODE HERE ***"
     # END PROBLEM 7
 
+    def say(score0, score1):
+        if who == 0:
+            score = score0
+        else:
+            score = score1
+        if score - last_score > running_high:
+            running_high = score - last_score
+            print(running_high, "point(s)! The most yet for Player", who)
+        return announce_highest(who, score, running_high)
+    return say
+
 
 #######################
 # Phase 3: Strategies #
@@ -269,6 +328,12 @@ def make_averaged(original_function, trials_count=1000):
     # BEGIN PROBLEM 8
     "*** YOUR CODE HERE ***"
     # END PROBLEM 8
+    def get_average(*args):
+        sum = 0
+        for i in range(0, trials_count):
+            sum += original_function(*args)
+        return sum / trials_count
+    return get_average
 
 
 def max_scoring_num_rolls(dice=six_sided, trials_count=1000):
@@ -283,6 +348,17 @@ def max_scoring_num_rolls(dice=six_sided, trials_count=1000):
     # BEGIN PROBLEM 9
     "*** YOUR CODE HERE ***"
     # END PROBLEM 9
+
+    max_num = 0
+    max_score = 0
+
+    for i in range(1, 11):
+        get_average = make_averaged(roll_dice, trials_count)
+        score = get_average(i, dice)
+        if score > max_score:
+            max_score = score
+            max_num = i
+    return max_num
 
 
 def winner(strategy0, strategy1):
@@ -331,8 +407,10 @@ def bacon_strategy(score, opponent_score, cutoff=8, num_rolls=6):
     rolls NUM_ROLLS otherwise.
     """
     # BEGIN PROBLEM 10
-    return 6  # Replace this statement
     # END PROBLEM 10
+    if free_bacon(opponent_score) >= cutoff:
+        return 0
+    return num_rolls
 
 
 def extra_turn_strategy(score, opponent_score, cutoff=8, num_rolls=6):
@@ -341,8 +419,13 @@ def extra_turn_strategy(score, opponent_score, cutoff=8, num_rolls=6):
     Otherwise, it rolls NUM_ROLLS.
     """
     # BEGIN PROBLEM 11
-    return 6  # Replace this statement
     # END PROBLEM 11
+    bacon_score = free_bacon(opponent_score)
+
+    if extra_turn(score + bacon_score, opponent_score):
+        return 0
+
+    return bacon_strategy(score, opponent_score, cutoff, num_rolls)
 
 
 def final_strategy(score, opponent_score):
