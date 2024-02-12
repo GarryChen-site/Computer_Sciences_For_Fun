@@ -133,13 +133,15 @@ def scheme_read(src):
         # BEGIN PROBLEM 1
         "*** YOUR CODE HERE ***"
         # END PROBLEM 1
+        return nil
     elif val == '(':
         # BEGIN PROBLEM 1
         "*** YOUR CODE HERE ***"
         # END PROBLEM 1
+        return read_tail(src)
     elif val == "'":
         # BEGIN PROBLEM 6
-        "*** YOUR CODE HERE ***"
+        return Pair('quote', Pair(scheme_read(src), nil))
         # END PROBLEM 6
     elif val not in DELIMITERS:
         return val
@@ -160,10 +162,13 @@ def read_tail(src):
             # BEGIN PROBLEM 1
             "*** YOUR CODE HERE ***"
             # END PROBLEM 1
+            src.pop_first() # Remove the )
+            return nil
         else:
             # BEGIN PROBLEM 1
             "*** YOUR CODE HERE ***"
             # END PROBLEM 1
+            return Pair(scheme_read(src), read_tail(src))
     except EOFError:
         raise SyntaxError('unexpected end of file')
 
