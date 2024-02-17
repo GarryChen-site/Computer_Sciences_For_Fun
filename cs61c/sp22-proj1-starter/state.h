@@ -31,4 +31,23 @@ void update_state(game_state_t* state, int (*add_food)(game_state_t* state));
 game_state_t * initialize_snakes(game_state_t* state);
 game_state_t* load_board(char* filename);
 
+
+typedef enum {
+    TAIL_UP,
+    TAIL_LEFT,
+    TAIL_DOWN,
+    TAIL_RIGHT,
+} tail_state_m;
+
+typedef enum {
+    BODY_UP,
+    BODY_LEFT,
+    BODY_DOWN,
+    BODY_RIGHT,
+    BODY_DEAD,
+} body_state_m;
+
+extern const char SNAKE_TAIL[4];
+extern const char SNAKE_BODY[5];
+
 #endif
