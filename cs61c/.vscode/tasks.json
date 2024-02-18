@@ -51,5 +51,15 @@
 				"isDefault": true
 		    }
         },
+		{
+		    "label": "project2",
+		    "type": "shell",
+		    "command": "docker run --rm -t -v ${workspaceFolder}/sp22-proj2-starter:/work --workdir /work cs61c:v3 /bin/sh",
+		    "problemMatcher": ["$gcc"],
+		    "group": {
+				"kind": "build",
+				"isDefault": true
+		    }
+        },
     ]
 }
