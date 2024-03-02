@@ -24,96 +24,105 @@
 #     this function terminates the program with exit code 38
 # =======================================================
 matmul:
-
-	# Error checks
+    # Error checks
     li      t0, 1
     blt     a1, t0, error
     blt     a2, t0, error
     blt     a4, t0, error
     blt     a5, t0, error
     bne     a2, a4, error
-	bne 	a1, a5, error
-
-	# Prologue
-    addi   sp, sp, -32
-    sw     ra, 28(sp)
-    sw     s6, 24(sp)
-    sw     s5, 20(sp)
-    sw     s4, 16(sp)
-    sw     s3, 12(sp)
-    sw     s2, 8(sp)
-    sw     s1, 4(sp)
-    sw     s0, 0(sp)
-
-    mv     s0, a0
-    mv     s1, a1
-    mv     s2, a2
-    mv     s3, a3
-    mv     s4, a4
-    mv     s5, a5
-    mv     s6, a6
-
+    # Prologue
+    addi    sp, sp, -4
+    sw      s0, 0(sp)
     # init
-    li      t0, 0  # i=0
-
-
-outer_loop_start:
-    li      t1, 0  # j=0
-
-inner_loop_start:
-	mv a0, s0
-    
-    # calculate a1 address
-    li t2, 4
-    mul t2, t2, t1
-    add a1, s3, t2
-
-    mv a2, s2
-    li a3, 1
-    mv a4, s5
-    
-    # prologue
-	addi sp, sp, -8
-    sw t0, 0(sp)
-    sw t1, 4(sp)
-    
-    jal dot # dot's args are in a0, a1, a2, a3, a4
-
-    sw a0, 0(s6)
-    addi s6, s6, 4
-    
-    lw t0, 0(sp)
-    lw t1, 4(sp)
-	addi sp, sp, 8
-    # epilogue
-    
-    addi t1, t1, 1 # j++
-    beq t1, s5, inner_loop_end
-    j inner_loop_start
-
-inner_loop_end:
-	addi t0, t0, 1 # i++
-    beq t0, s1, outer_loop_end
-
-	li t2, 4
-    mul t2, t2, s2
-    add s0, s0, t2
-
-    j outer_loop_start
-outer_loop_end:
-
-	# Epilogue
-    lw     ra, 28(sp)
-    lw     s6, 24(sp)
-    lw     s5, 20(sp)
-    lw     s4, 16(sp)
-    lw     s3, 12(sp)
-    lw     s2, 8(sp)
-    lw     s1, 4(sp)
-    lw     s0, 0(sp)
-    addi   sp, sp, 32
-	ret
-
+    mv      t0, x0 # set row number to zero
+    mv      s0, x0 # set column number to zero
+    mv      t6, x0 
+outer_loop:
+    mv      t1, x0 # set inner counter to zero
+    mv      t6, x0 # sum
+    mul     t2, a2, t0 # get row memory bias
+    slli    t2, t2, 2 # 4 bytes per element
+    add     t2, a0, t2 # get outer pointer address
+inner_loop:
+    # access m1 element
+    mul     t3, a5, t1 # step stride
+    add     t3, t3, s0 # column bias added
+    slli    t3, t3, 2 # 4 bytes per element
+    add     t3, a3, t3 # get inner element address
+    lw      t5, 0(t3)
+    # access m0 element
+    slli    t3, t1, 2 # 4 bytes per element
+    add     t3, t2, t3 # get outer element address
+    lw      t4, 0(t3)
+    mul     t4, t5, t4 # store result in t4
+    # store element
+    add     t6, t6, t4
+    # check inner loop condition
+    addi    t1, t1, 1
+    bge     t1, a2, inner_end
+    j       inner_loop
+inner_end:
+    # get bias for output pointer
+    mul     t4, a5, t0
+    slli    t4, t4, 2
+    # get current access memory address
+    slli    t5, s0, 2
+    add     t5, a6, t5
+    add     t5, t5, t4 # add bias
+    sw      t6, 0(t5)
+    # reset temp sum
+    mv      t6, x0
+    # check if need clear column number
+    addi    s0, s0, 1
+    bge     s0, a5, clear_col_num
+    j       outer_loop
+clear_col_num:
+    mv      s0, x0
+outer_end:
+    # check outer loop condition
+    addi    t0, t0, 1
+    bge     t0, a1, out
+    j       outer_loop
+out:
+    lw      s0, 0(sp)
+    addi    sp, sp, 4
+    ret
 error:
     li      a0, 38
     j       exit
+
+
+
+# possible C code
+
+; #include <stdio.h>
+
+; void matmul(int a1, int a2, int a4, int a5, int* a0, int* a3, int* a6) {
+;     // Error checks
+;     if (a1 < 1 || a2 < 1 || a4 < 1 || a5 < 1 || a2 != a4) {
+;         printf("Error: Invalid matrix dimensions.\n");
+;         exit(38);
+;     }
+
+;     // Initialize row and column numbers
+;     int row = 0;
+;     int col = 0;
+
+;     // Outer loop over rows of first matrix and columns of second matrix
+;     for (row = 0; row < a1; row++) {
+;         // Inner loop over elements of current row of first matrix and current column of second matrix
+;         for (col = 0; col < a5; col++) {
+;             int sum = 0;
+;             for (int i = 0; i < a2; i++) {
+;                 // Access elements of first and second matrices
+;                 int element1 = a0[row * a2 + i];
+;                 int element2 = a3[i * a5 + col];
+;                 // Multiply elements and add to sum
+;                 sum += element1 * element2;
+;             }
+;             // Store sum in result matrix
+;             a6[row * a5 + col] = sum;
+;         }
+;     }
+; }

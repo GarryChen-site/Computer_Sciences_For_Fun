@@ -40,7 +40,7 @@
 #       s6, input columns address
 
 classify:
-
+    # Prologue
     addi    sp, sp, -64
     sw      s0, 12(sp)
     sw      s1, 16(sp)
@@ -55,13 +55,15 @@ classify:
     sw      s10, 52(sp)
     sw      s11, 56(sp)
     sw      ra, 60(sp)
+    # Epilogue
 
-	li s0, 5
-	bne a0, s0, argnum_error
+    # argument number checker
+    li      s0, 5
+    bne     a0, s0, argnum_error
 
-	mv s1, a1 # Save argv pointer
-	mv s0, a2 # Save print switch
-
+    mv      s1, a1 # store the argument pointer
+    mv      s0, a2 # store print switcher
+    
     # Read pretrained m0, locate at address (a1 + 4)
     li      a0, 4
     jal     ra, malloc  # return the pointer to the num of rows of m0
@@ -110,39 +112,36 @@ classify:
     jal     ra, read_matrix
     mv      s4, a0 # TODO (NEED FREE) s4 stores input's matrix address
 
-
-
 	# Compute h = matmul(m0, input)
-    lw     t0, 0(s11) # m0's rows
-    lw     t3, 0(s6) # m0's columns
+    lw      t0, 0(s11) # m0 rows
+    lw      t3, 0(s6) # input columns 
     # malloc
-    mul t4, t0, t3
-    sw  t4, 8(sp) # store the size of h
-    slli a0, t4, 2 # 4-size per element
-    jal ra, malloc
-    beqz a0, malloc_error
-    sw a0, 0(sp) 
+    mul     t4, t0, t3 # 'h' size (s11,s10)x(s7,s6) = (s11,s6)
+    sw      t4, 8(sp)
+    slli    a0, t4, 2 # 4-bytes per element
+    jal     ra, malloc
+    beqz    a0, malloc_error
+    sw      a0, 0(sp) # TODO (NEED FREE) 'h'
 
     # matmul
-    lw a6, 0(sp) # store result address
-    mv a0, s2 # m0's matrix address
-    lw a1, 0(s11)
-    lw a2, 0(s10)
-    mv a3, s4 # input's matrix address
-    lw a4, 0(s7)
-    lw a5, 0(s6)
-    jal ra, matmul
+    lw      a6, 0(sp) # store result in 'h'
+    mv      a0, s2
+    lw      a1, 0(s11)
+    lw      a2, 0(s10)
+    mv      a3, s4
+    lw      a4, 0(s7)
+    lw      a5, 0(s6)
+    jal     ra, matmul
 
 
 	# Compute h = relu(h)
-    lw a0, 0(sp) # h's matrix address
-    lw a1, 8(sp) # h's size
-    jal ra, relu
+    lw      a0, 0(sp) # 'h'
+    lw      a1, 8(sp) # 'h' size
+    jal     ra, relu
 
 	# Compute o = matmul(m1, h)
-    lw t0, 0(s9) # m1's rows
-    lw t3, 0(s6) # h's columns
-
+    lw      t0, 0(s9) # m1 rows
+    lw      t3, 0(s6) # 'h' columns
     # malloc
     mul     t4, t0, t3 # output size (s9,s8)x(s11,s6) = (s9,s6)
     sw      t4, 8(sp)
@@ -237,7 +236,6 @@ done:
 
 	ret
 
-
 malloc_error:
     li      a0, 26
     j       exit
@@ -245,3 +243,68 @@ malloc_error:
 argnum_error:
     li      a0, 31
     j       exit
+
+
+# possible C code
+
+; #include <stdlib.h>
+; #include <stdio.h>
+
+; // Assuming these functions are defined elsewhere
+; extern void read_matrix(int* matrix, int* rows, int* cols);
+; extern void write_matrix(int* matrix, int rows, int cols);
+; extern void matmul(int* result, int* mat1, int rows1, int cols1, int* mat2, int rows2, int cols2);
+; extern void relu(int* matrix, int size);
+; extern int argmax(int* matrix, int size);
+; extern void print_int(int value);
+; extern void print_char(char value);
+
+; int classify(int arg_count, int* args, int print_switch) {
+;     if (arg_count != 5) {
+;         exit(31);
+;     }
+
+;     int* m0_rows = malloc(sizeof(int));
+;     int* m0_cols = malloc(sizeof(int));
+;     int* m0 = read_matrix(args[1], m0_rows, m0_cols);
+
+;     int* m1_rows = malloc(sizeof(int));
+;     int* m1_cols = malloc(sizeof(int));
+;     int* m1 = read_matrix(args[2], m1_rows, m1_cols);
+
+;     int* input_rows = malloc(sizeof(int));
+;     int* input_cols = malloc(sizeof(int));
+;     int* input = read_matrix(args[3], input_rows, input_cols);
+
+;     int h_size = (*m0_rows) * (*input_cols);
+;     int* h = malloc(h_size * sizeof(int));
+;     matmul(h, m0, *m0_rows, *m0_cols, input, *input_rows, *input_cols);
+;     relu(h, h_size);
+
+;     int o_size = (*m1_rows) * (*input_cols);
+;     int* o = malloc(o_size * sizeof(int));
+;     matmul(o, m1, *m1_rows, *m1_cols, h, *m0_rows, *input_cols);
+;     write_matrix(args[4], o, *m1_rows, *input_cols);
+
+;     int result = argmax(o, o_size);
+
+;     if (print_switch != 0) {
+;         print_int(result);
+;         print_char('\n');
+;     }
+
+;     // Free allocated memory
+;     free(m0_rows);
+;     free(m0_cols);
+;     free(m0);
+;     free(m1_rows);
+;     free(m1_cols);
+;     free(m1);
+;     free(input_rows);
+;     free(input_cols);
+;     free(input);
+;     free(h);
+;     free(o);
+
+;     return result;
+; }
