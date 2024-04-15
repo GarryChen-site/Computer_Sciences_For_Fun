@@ -11,9 +11,20 @@ RUN apt-get install bison flex -y && \
 
 RUN apt-get install -y valgrind
 
+RUN apt-get update && \
+    apt-get install -y software-properties-common && \
+    add-apt-repository ppa:deadsnakes/ppa && \
+    apt-get install -y python3.8
+
 
 COPY installCgdb.sh /
 
 RUN chmod +x /installCgdb.sh
 
 RUN /installCgdb.sh
+
+RUN apt-get update && \
+    apt-get install libcunit1 libcunit1-dev -y
+
+RUN apt-get update && \
+    apt-get install python3.8-dev -y
