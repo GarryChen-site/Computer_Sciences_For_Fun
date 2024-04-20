@@ -397,44 +397,161 @@ int pow_matrix(matrix *result, matrix *mat, int pow) {
     int row = mat->rows;
     int col = mat->cols;
     if(pow == 0) {
-        for(int i = 0; i < row; i ++ ) {
-            for(int j = 0; j < col; j ++ ) {
-                if(i != j) {
-                    result->data[i * col + j] = 0;
-                } else {
-                    result->data[i * col + j] = 1;
+        #pragma omp parallel
+        {
+            #pragma omp parallel for
+            for(int i = 0; i < row; i ++ ) {
+                for(int j = 0; j < col; j ++ ) {
+                    if(i != j) {
+                        result->data[i * col + j] = 0;
+                    } else {
+                        result->data[i * col + j] = 1;
+                    }
                 }
             }
         }
     } else {
+        // define cur
         double* data = malloc(sizeof(double) * (size_t)(row * col));
-        for(int i = 0; i < row * col; i ++ ) {
-            data[i] = mat->data[i];
-        }
-
-        for(int power = 1; power < pow; power ++ ) {
-            double* tmp = malloc(sizeof(double) * (size_t)(row * col));
-
-            for(int i = 0; i < row * col; i ++ ) {
-                tmp[i] = data[i];
-            }
-
-            matrix* tmp_mat = malloc(sizeof(matrix));
-            tmp_mat->data = tmp;
-            tmp_mat->rows = row;
-            tmp_mat->cols = col;
-
-            mul_matrix(result, mat, tmp_mat);
-
-            for(int i = 0; i < row * col; i ++ ) {
-                data[i] = result->data[i];
-            }
-
-            free(tmp_mat);
-            free(tmp);
-        }
         
+        #pragma omp parallel
+        {
+            #pragma omp parallel for
+            for(int i = 0; i < (row * col / 4 * 4); i += 4) {
+                __m256d tmp = _mm256_loadu_pd(mat->data + i);
+                _mm256_storeu_pd(data + i, tmp);
+            }
+
+            #pragma omp parallel for
+            for(int i = (row * col / 4 * 4); i < row * col; i ++ ) {
+                data[i] = mat->data[i];
+            }
+        }
+
+
+        matrix* cur = malloc(sizeof(matrix));
+        cur->data = data;
+        cur->rows = row;
+        cur->cols = col;
+
+        // define res
+        double* data1 = malloc(sizeof(double) * (size_t)(row * col));
+
+        #pragma omp parallel
+        {
+            #pragma omp parallel for
+            for(int i = 0; i < (row * col / 4 * 4); i += 4 ) {
+                __m256d zero = _mm256_set1_pd(0);
+                _mm256_storeu_pd(data1 + i, zero);
+            }
+
+            #pragma omp parallel for
+            for(int i = (row * col / 4 * 4); i < row * col; i ++ ) {
+                data1[i] = 0;
+            }
+        }
+
+        for(int i = 0; i * i < row * col; i ++ ) {
+            data1[i * col + i] = 1;
+        }
+
+        matrix* res = malloc(sizeof(matrix));
+        res->data = data1;
+        res->rows = row;
+        res->cols = col;
+
+        // quick matrix power
+        while(pow != 0) {
+            if(pow & 1) {
+                double* data2 = malloc(sizeof(double) * (size_t)(row * col));
+
+                #pragma omp parallel
+                {
+                    #pragma omp parallel for
+                    for(int i = 0; i < (row * col / 4 * 4); i += 4) {
+                        __m256d tmp = _mm256_loadu_pd(res->data + i);
+                        _mm256_storeu_pd(data2 + i, tmp);
+                    }
+
+                    #pragma omp parallel for
+                    for(int i = (row * col / 4 * 4); i < row * col; i ++ ) {
+                        data2[i] = res->data[i];
+                    }
+                }
+
+
+                matrix* res_copy = malloc(sizeof(matrix));
+                res_copy->data = data2;
+                res_copy->rows = row;
+                res_copy->cols = col;
+                
+                fill_matrix(res, 0);
+                mul_matrix(res, res_copy, cur);
+
+                free(data2);
+                free(res_copy);
+            }
+
+            pow >>= 1;
+
+            double* data3 = malloc(sizeof(double) * (size_t)(row * col));
+            double* data4 = malloc(sizeof(double) * (size_t)(row * col));
+
+            #pragma omp parallel
+            {
+                #pragma omp parallel for
+                for(int i = 0; i < (row * col / 4 * 4); i += 4) {
+                    __m256d tmp = _mm256_loadu_pd(cur->data + i);
+                    _mm256_storeu_pd(data3 + i, tmp);
+                    _mm256_storeu_pd(data4 + i, tmp);
+                }
+
+                #pragma omp parallel for
+                for(int i = (row * col / 4 * 4); i < row * col; i ++ ) {
+                    data3[i] = cur->data[i];
+                    data4[i] = cur->data[i];
+                }
+            }
+
+            matrix* cur_copy1 = malloc(sizeof(matrix));
+            cur_copy1->data = data3;
+            cur_copy1->rows = row;
+            cur_copy1->cols = col;
+
+            matrix* cur_copy2 = malloc(sizeof(matrix));
+            cur_copy2->data = data4;
+            cur_copy2->rows = row;
+            cur_copy2->cols = col;
+
+            fill_matrix(cur, 0);
+            mul_matrix(cur, cur_copy1, cur_copy2);
+
+            free(data3);
+            free(data4);
+
+            free(cur_copy1);
+            free(cur_copy2);
+        }
+
+        #pragma omp parallel
+        {
+            #pragma omp parallel for
+            for(int i = 0; i < (row * col / 4 * 4); i += 4) {
+                __m256d tmp = _mm256_loadu_pd(res->data + i);
+                _mm256_storeu_pd(result->data + i, tmp);
+            }
+
+            #pragma omp parallel for
+            for(int i = (row * col / 4 * 4); i < row * col; i ++ ) {
+                result->data[i] = res->data[i];
+            }
+        }
+
+        free(data1);
+        free(res);
+
         free(data);
+        free(cur);
     }
     return 0;
 }
