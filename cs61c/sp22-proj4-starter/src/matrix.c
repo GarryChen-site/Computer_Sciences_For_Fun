@@ -203,9 +203,18 @@ void fill_matrix(matrix *mat, double val) {
     // Task 1.5 TODO
     int rows = mat->rows;
     int cols = mat->cols;
-    for(int i = 0; i < rows * cols; i ++ ) {
-        mat->data[i] = val;
-    }
+
+    #pragma omp parallel
+    {
+
+        for(int i = 0; i < (rows * cols / 4 * 4); i += 4) {
+            _mm256_storeu_pd (mat->data + i, _mm256_set1_pd(val));
+        }
+
+        for (int i = (rows * cols / 4 * 4); i < rows * cols; i++) {
+            mat -> data[i] = val;
+        }
+    } 
 }
 
 /*
@@ -217,13 +226,28 @@ int abs_matrix(matrix *result, matrix *mat) {
     // Task 1.5 TODO
     int rows = mat->rows;
     int cols = mat->cols;
-    for(int i = 0; i < rows * cols; i ++ ) {
+
+    __m256d zero = _mm256_set1_pd(0);
+
+    for(int i = 0; i < (rows * cols / 4 * 4); i += 4 ) {
+        __m256d tmp = _mm256_loadu_pd(mat->data + i);
+        __m256d mask = _mm256_cmp_pd(tmp, zero, 1);
+        __m256d flex = _mm256_and_pd(tmp, mask);
+        __m256d flop = _mm256_sub_pd(zero, flex);
+        
+        tmp = _mm256_max_pd(tmp, flop);
+
+        _mm256_storeu_pd(result->data + i, tmp);
+    }
+
+    for(int i = rows * cols / 4 * 4; i < rows * cols; i ++ ) {
         if(mat->data[i] >= 0) {
             result->data[i] = mat->data[i];
         } else {
             result->data[i] = -1 * mat->data[i];
         }
     }
+
     return 0;
 }
 
@@ -237,8 +261,16 @@ int neg_matrix(matrix *result, matrix *mat) {
     // Task 1.5 TODO
     int rows = mat->rows;
     int cols = mat->cols;
-    for(int i = 0; i < rows * cols; i ++ ) {
-        result->data[i] = -1 * mat->data[i];
+
+    __m256d zero = _mm256_set1_pd(0);
+
+    for(int i = 0; i < (rows * cols / 4 * 4); i += 4 ) {
+        __m256d tmp = _mm256_loadu_pd (mat->data + i);
+        _mm256_storeu_pd (result->data + i, _mm256_sub_pd(zero, tmp));
+    }
+
+    for(int i = rows * cols / 4 * 4; i < rows * cols; i ++ ) {
+        result->data[i] = 0 - mat->data[i];
     }
     return 0;
 }
@@ -253,9 +285,16 @@ int add_matrix(matrix *result, matrix *mat1, matrix *mat2) {
     // Task 1.5 TODO
     int rows = mat1->rows;
     int cols = mat1->cols;
-    for(int i = 0; i < rows * cols; i ++ ) {
+    for(int i = 0; i < (rows * cols / 4 * 4); i += 4 ) {
+        __m256d tmp_1 = _mm256_loadu_pd (mat1->data + i);
+        __m256d tmp_2 = _mm256_loadu_pd (mat2->data + i);
+        _mm256_storeu_pd (result->data + i, _mm256_add_pd(tmp_1, tmp_2));
+    }
+
+    for(int i = rows * cols / 4 * 4; i < rows * cols; i ++ ) {
         result->data[i] = mat1->data[i] + mat2->data[i];
     }
+
     return 0;
 }
 
@@ -270,9 +309,17 @@ int sub_matrix(matrix *result, matrix *mat1, matrix *mat2) {
     // Task 1.5 TODO
     int rows = mat1->rows;
     int cols = mat1->cols;
-    for(int i = 0; i < rows * cols; i ++ ) {
+
+    for(int i = 0; i < (rows * cols / 4 * 4); i += 4 ) {
+        __m256d tmp_1 = _mm256_loadu_pd (mat1->data + i);
+        __m256d tmp_2 = _mm256_loadu_pd (mat2->data + i);
+        _mm256_storeu_pd (result->data + i, _mm256_sub_pd(tmp_1, tmp_2));
+    }
+
+    for(int i = rows * cols / 4 * 4; i < rows * cols; i ++ ) {
         result->data[i] = mat1->data[i] - mat2->data[i];
     }
+
     return 0;
 }
 
@@ -289,13 +336,26 @@ int mul_matrix(matrix *result, matrix *mat1, matrix *mat2) {
     int col1 = mat1->cols;
     int col2 = mat2->cols;
     fill_matrix(result, 0);
-    for (int i = 0; i < row1; i ++ ) {
-        for (int j = 0; j < col1; j ++ ) {
-            for (int k = 0; k < col2; k ++ ) {
+
+    for(int i = 0; i < row1 / 4 * 4; i += 4) {
+        for(int j = 0; j < col1 / 4 * 4; j += 4) {
+            for(int k = 0; k < col2 / 4 * 4; k += 4) {
+                __m256d tmp_1 = _mm256_loadu_pd (mat1->data + i * col1 + j);
+                __m256d tmp_2 = _mm256_loadu_pd (mat2->data + j * col2 + k);
+                __m256d tmp_c = _mm256_loadu_pd (result->data + i * col2 + k);
+                _mm256_storeu_pd (result->data + i, _mm256_fmadd_pd (tmp_1, tmp_2, tmp_c));
+            }
+        }
+    }
+
+    for (int i = row1 / 4 * 4; i < row1; i ++ ) {
+        for (int j = col1 / 4 * 4; j < col1; j ++ ) {
+            for (int k = col2 / 4 * 4; k < col2; k ++ ) {
                 result->data[i * col2 + k] += mat1->data[i * col1 + j] * mat2->data[j * col2 + k];
             }
         }
     }
+
     return 0;
 }
 
