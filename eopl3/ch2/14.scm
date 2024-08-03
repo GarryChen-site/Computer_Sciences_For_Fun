@@ -24,6 +24,8 @@
 	  (lambda ()
 	    #f))))
 
+;; the first element of a env is excepted to be a function
+;; that takes search-var as an argument and returns its associated value
 (define apply-env
   (lambda (env search-var)
     ((car env) search-var)))
