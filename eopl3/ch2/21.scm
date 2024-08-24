@@ -25,6 +25,8 @@
   (lambda (var val E)
     (extend-env-inter var val E)))
 
+;; cases type-name expression 
+;; 'expression' is evaluated ,resulting in some value v of 'type name'
 (define apply-env
   (lambda (var E)
     (cases env E
