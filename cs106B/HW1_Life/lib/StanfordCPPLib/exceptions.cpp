@@ -28,7 +28,7 @@
 #include "error.h"
 #include "filelib.h"
 #include "strlib.h"
-#include "call_stack.h"
+#include "stacktrace/call_stack.h"
 #ifdef _WIN32
 #include <windows.h>
 #  undef MOUSE_EVENT
