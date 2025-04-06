@@ -1,7 +1,3 @@
-// This is the CPP file you will edit and turn in.
-// Also remove these comments here and add your own.
-// TODO: remove this comment header!
-
 #include <cctype>
 #include <cmath>
 #include <fstream>
@@ -26,13 +22,17 @@ const string WELCOME_MESSAGE = "Welcome to the CS 106B Game of Life,\n"
                                "- Locations with 3 neighbors will create life.\n"
                                "- A cell with 4 or more neighbors dies.\n\n";
 const string PROMPT_FILE = "Grid input file name? ";
-const string RANDOM = "(type \"random\" to generate a random pattern) ";
 const string FILE_ERROR = "Unable to open that file.  Try again.\n";
 const string OPTIONS = "Should the simulation wrap around the grid (y/n)? ";
 const string MENU = "a)nimate, t)ick, q)uit? ";
 const string PROMPT_FRAME_NUMBER = "How many frames? ";
 const string ERROR = "Invalid choice; please try again.\n";
 const int PAUSE = 50;
+
+
+void displayGrid(Grid<string> &grid);
+void advanceGrid(Grid<string>& grid, bool wrapping);
+int countNeighbors(Grid<string>& grid, int row, int col, bool wrapping);
 
 int main() {
 
@@ -42,4 +42,89 @@ int main() {
 
     cout << "Have a nice Life!" << endl;
     return 0;
+}
+
+/**
+ * @brief Displays the grid in the console.
+ * @param grid The grid to display.
+ */
+void displayGrid(Grid<string> &grid) {
+    for (int r = 0; r < grid.numRows(); r++) {
+        for (int c = 0; c < grid.numCols(); c++) {
+            cout << grid[r][c];
+        }
+        cout << endl;
+    }
+}
+
+
+void advanceGrid(Grid<string>& grid, bool wrapping){
+    Grid<int> counts(grid.numRows(), grid.numCols());
+    for(int r = 0; r < grid.numRows(); r++){
+        for(int c = 0; c < grid.numCols(); c++){
+            counts[r][c] = countNeighbors(grid, r, c, wrapping);
+        }
+    }
+    for (int r = 0; r < grid.numRows(); r++){
+        for (int c = 0; c < grid.numCols(); c++) {
+            if(counts[r][c] <= 1 || counts[r][c] >= 4) {
+                grid.set(r, c, "-");
+            }
+            else if(counts[r][c] == 3) {
+                grid.set(r, c, "X");
+            }
+        }
+    }
+    displayGrid(grid);
+}
+
+
+int countNeighbors(Grid<string>& grid, int row, int col, bool wrapping){
+    int count = 0;
+    if(!wrapping) {
+        for(int r = row - 1; r <= row + 1; r++) {
+            for(int c = col - 1; c <= col + 1; c++) {
+                if(row != r || col != c){
+                    if(grid.inBounds(r, c)) {
+                        if(grid[r][c] == "X") {
+                            count++;
+                        }
+                    }
+                }
+            }
+        }
+    } 
+    else {
+        int numRows = grid.numRows();
+        int numCols = grid.numCols();
+        for(int r = row - 1; r <= row + 1; r++){
+            for(int c = col - 1; c <= col + 1; c++) {
+                if(row != r || col != c) {
+                    if(grid.inBounds(r, c)){
+                        if(grid[r][c] == "X"){
+                            count++;
+                        }
+                    }
+                    else {
+                        if((r == -1 || r == numRows) && (c == -1 || c == numCols)) {
+                            if(grid[(r + numRows) % numRows][(c + numCols) % numCols] == "X") {
+                                count++;
+                            }
+                        }
+                        else if(r == -1 || r == numRows) {
+                            if(grid[(r + numRows) % numRows][c] == "X") {
+                                count++;
+                            }
+                        }
+                        else if(c == -1 || c == numCols) {
+                            if(grid[r][(c + numCols) % numCols] == "X") {
+                                count++;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return count;
 }
