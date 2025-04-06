@@ -2,7 +2,7 @@ project(hw1)
 cmake_minimum_required (VERSION 3.11)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ldl -lpthread")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ldl -lpthread")
 
 include_directories(lib/StanfordCPPLib)
 file(GLOB stanford_files
