@@ -39,6 +39,76 @@ int main() {
     // Displaying the intro welcome message
     cout << WELCOME_MESSAGE;
 
+    string file;
+
+    // Prompting the user for a file name
+    do{
+        file = getLine(PROMPT_FILE);
+        if (!isFile(file)) {
+            cout << FILE_ERROR;
+        }
+    }while(!isFile(file));
+
+    ifstream stream;
+    openFile(stream, file);
+
+    // constructing the grid from the file
+    string row, col;
+    getline(stream, row);
+    getline(stream, col);
+    Grid<string> grid(stringToInteger(row), stringToInteger(col));
+
+    // filling the grid 
+    string toPut;
+    for (int r = 0; r < grid.numRows(); r++) {
+        getline(stream, toPut);
+        for (int c = 0; c < grid.numCols(); c++) {
+            grid[r][c] = toPut[c];
+        }
+    }
+
+    // updating the grid and the menu options
+    string wrap;
+    do {
+        wrap = getLine(OPTIONS);
+        if(!equalsIgnoreCase(wrap, "y") && !equalsIgnoreCase(wrap, "n")) {
+            cout << ERROR;
+        }
+    }while(!equalsIgnoreCase(wrap, "y") && !equalsIgnoreCase(wrap, "n"));
+
+    bool wrapAround;
+    if(equalsIgnoreCase(wrap, "y")) {
+        wrapAround = true;
+    } else if (equalsIgnoreCase(wrap, "n")) {
+        wrapAround = false;
+    }
+
+    displayGrid(grid);
+
+    string choice;
+    int frameNo;
+    do{
+        choice = getLine(MENU);
+        if(equalsIgnoreCase(choice, "a")) {
+            // Animate the grid
+            frameNo = getInteger(PROMPT_FRAME_NUMBER);
+            for(int i = 0; i < frameNo; i++) {
+                clearConsole();
+                advanceGrid(grid, wrapAround);
+                pause(PAUSE);
+            }
+        }
+        else if (equalsIgnoreCase(choice, "t")) {
+            advanceGrid(grid, wrapAround);
+        }
+        else if (equalsIgnoreCase(choice, "q")) {
+
+        }
+        else {
+            cout << ERROR;
+        }
+    }while(!equalsIgnoreCase(choice, "q"));
+
 
     cout << "Have a nice Life!" << endl;
     return 0;
