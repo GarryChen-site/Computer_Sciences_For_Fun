@@ -11,6 +11,8 @@
 #include "lexicon.h"
 #include "simpio.h"
 #include "filelib.h"
+#include "hashset.h"
+#include "queue.h"
 
 using namespace std;
 
@@ -32,10 +34,23 @@ const string ALPHABET = "abcdefghijklmnopqrstuvwxyz";
 bool checkWords(Lexicon& words, string& word1, string& word2);
 Lexicon getLexiconFromFile(string& file);
 bool getWords(Lexicon &englishWords, string &word1, string &word2);
+Stack<string> findShortestPath(Lexicon& words, string& word1, string& word2);
+HashSet<string> findNeighbors(Lexicon& words, string word);
+void displayLadder(Stack<string>& stack, string& word1, string& word2);
 
 int main() {
-
-
+    cout << INTRO;
+    string file;
+    Lexicon englishWords = getLexiconFromFile(file);
+    string word1, word2;
+    bool quit;
+    do{
+        quit = getWords(englishWords, word1, word2);
+        if(!quit){
+            Stack<string> ladder = findShortestPath(englishWords, word1, word2);
+            displayLadder(ladder, word1, word2);
+        }
+    }while(!quit);
 
     cout << "Have a nice day." << endl;
     return 0;
@@ -60,6 +75,9 @@ bool getWords(Lexicon &words, string &word1, string &word2){
     return quit;
 }
 
+/**
+ * Generates and returns a Lexicon object from a file.
+ */
 Lexicon getLexiconFromFile(string& file){
     do{
         file = getLine(FILE_PROMPT);
@@ -86,4 +104,58 @@ bool checkWords(Lexicon& words, string& word1, string& word2){
         return false;
     }
     return true;
+}
+
+
+void displayLadder(Stack<string>& stack, string& word1, string& word2){
+    if (stack.isEmpty()) {
+        cout << LADDER_NOT_FOUND.substr(0, 26) + word1 + LADDER_NOT_FOUND.substr(25, 9)
+                + word2 + LADDER_NOT_FOUND.substr(LADDER_NOT_FOUND.length() - 2);
+    }
+    else {
+        cout << LADDER_DISPLAY.substr(0, 14) + word2 + LADDER_DISPLAY.substr(13, 9)
+                + word1 + LADDER_DISPLAY.substr(LADDER_DISPLAY.length() - 2);
+        while (!stack.isEmpty()) {
+            cout << stack.pop() << " ";
+        }
+        cout << endl;
+    }
+}
+
+
+HashSet<string> findNeighbors(Lexicon& words, string word){
+    HashSet<string> neighbors;
+    string copy = word;
+    for(int i = 0; i < word.length(); i++) {
+        for (int j = 0; j < ALPHABET.length(); j++) {
+            copy[i] = ALPHABET[j];
+            if(words.contains(copy)){
+                neighbors.add(copy);
+            }
+        }
+        copy = word;
+    }    
+    return neighbors;
+}
+
+
+Stack<string> findShortestPath(Lexicon& words, string& word1, string& word2){
+    Queue<Stack<string>> ladders = {{word1}};
+    Stack<string> ladder;
+    HashSet<string> used = {word1};
+    while(!ladders.isEmpty()) {
+        ladder = ladders.dequeue();
+        if(ladder.peek() == word2) {
+            return ladder;
+        }
+        for(string neighbor: findNeighbors(words, ladder.peek())) {
+            if(!used.contains(neighbor)) {
+                Stack<string> copyLadder = ladder;
+                copyLadder.push(neighbor);
+                used.add(neighbor);
+                ladders.enqueue(copyLadder);
+            }
+        }
+    }    
+    return {};
 }
