@@ -49,6 +49,23 @@ void drawSierpinskiTriangle(GWindow &gw, double x, double y, double size, int or
     }
 }
 
+
+void drawTree(GWindow& gw, double x, double y, double size, int order, double angle) {
+    if (x < size /2  || y < size || size < 0 || order < 0) {
+        throw("invalid input");
+    } else if (order != 0) {
+        if (order >= 2) {
+            gw.setColor(BRANCH_COLOR);
+        } else {
+            gw.setColor(LEAF_COLOR);
+        }
+        gw.drawPolarLine(x, y, size/2, 180*angle/M_PI);
+        for(double i = -M_PI / 4; i <= M_PI / 4; i+= M_PI / 12) {
+            drawTree(gw, x + cos(angle) * size / 2, y - sin(angle) * size / 2, size / 2, order - 1, angle + i) ;
+        }
+    }
+}
+
 /**
  * Draws a recursive tree fractal image of the specified size and order,
  * placing the bounding box's top-left corner at position (x,y).
@@ -63,7 +80,7 @@ void drawSierpinskiTriangle(GWindow &gw, double x, double y, double size, int or
  */
 void drawTree(GWindow &gw, double x, double y, double size, int order)
 {
-    // TODO: write this function
+    drawTree(gw, x + size/2, y + size, size, order, M_PI/2);
 }
 
 /**
