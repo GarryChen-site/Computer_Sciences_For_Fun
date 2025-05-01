@@ -112,7 +112,18 @@ void mandelbrotSet(GWindow &gw, double minX, double incX,
     gw.add(&image);
     Grid<int> pixels = image.toGrid(); // Convert image to grid
 
-    // TODO: Put your Mandelbrot Set code here
+    for(int r = 0; r < pixels.numRows(); r++) {
+        for(int c = 0; c < pixels.numCols(); c++) {
+            int numIterations = mandelbrotSetIterations(Complex(minX + c * incX, minY + r * incY), 200);
+            if(color != 0) {
+                if(numIterations == maxIterations){
+                    pixels[r][c] = color;
+                }
+            } else {
+                pixels[r][c] = palette[numIterations % palette.size()];
+            }
+        }
+    }
 
     image.fromGrid(pixels); // Converts and puts the grid back into the image
 }
@@ -129,8 +140,15 @@ void mandelbrotSet(GWindow &gw, double minX, double incX,
  */
 int mandelbrotSetIterations(Complex c, int maxIterations)
 {
-    // TODO: Write this function
-    return 0; // Only here to make this compile
+    return mandelbrotSetIterations(Complex(0, 0), c, maxIterations);
+}
+
+int mandelbrotSetIterations(Complex z, Complex c, int remainingIterations, int & maxIterations) {
+    if ((z * z + c).abs() >= 4 || remainingIterations == 0) { //base case (the value diverges or c is successfully
+        return maxIterations - remainingIterations;           // determined as a mandelbrot set number)
+    } else { //recursive step (passing through the next recursively defined stage of the function)
+        return mandelbrotSetIterations(z * z + c, c, remainingIterations - 1, maxIterations);
+    }
 }
 /**
  * An iteration of the Mandelbrot Set recursive formula with given values z and c, to
@@ -145,8 +163,7 @@ int mandelbrotSetIterations(Complex c, int maxIterations)
  */
 int mandelbrotSetIterations(Complex z, Complex c, int remainingIterations)
 {
-    // TODO: write this function
-    return 0; // Only here to make this compile
+    return mandelbrotSetIterations(z, c, remainingIterations, remainingIterations);
 }
 
 // Helper function to set the palette
