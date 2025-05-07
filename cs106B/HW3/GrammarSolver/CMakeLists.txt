@@ -18,6 +18,12 @@ aux_source_directory(src hw3g_SOURCES)
 link_libraries(stanford)
 add_executable(hw3g ${hw3g_SOURCES})
 
+add_custom_command(TARGET hw3g POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/res
+        $<TARGET_FILE_DIR:hw3g>
+)
+
 
 target_link_libraries(${PROJECT_NAME}
         PUBLIC ${Boost_STACKTRACE_BASIC_LIBRARY}

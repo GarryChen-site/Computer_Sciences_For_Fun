@@ -7,7 +7,8 @@
  */
 
 #include "grammarsolver.h"
-#include "hashmap.h"
+#include "include/hashmap.h"
+#include <vector>
 
 using namespace std;
 
@@ -19,6 +20,20 @@ void generateMapFromFile(istream& input, HashMap<string, Vector<string>>& BNFMap
     auto rules = stringSplit(firstSplit[1], "|");
     BNFMap.put(nonTerminal, rules);
    } 
+}
+
+void grammarGenerate(istream& input, string symbol, HashMap<string, Vector<string>>& BNFMap, string& element) {
+    if(!BNFMap.containsKey(symbol)) {
+        element += " " + trim(symbol);
+    } else {
+        auto rules = BNFMap.get(symbol);
+        string rule = rules[randomInteger(0, rules.size() - 1)];
+        rule = trim(rule);
+        auto ruleSplit = stringSplit(rule, " ");
+        for(auto curr : ruleSplit) {
+            grammarGenerate(input, trim(curr), BNFMap, element);
+        }
+    }
 }
 
 /**
@@ -36,5 +51,12 @@ Vector<string> grammarGenerate(istream& input, string symbol, int times) {
     HashMap<string, Vector<string>> BNFMap;
     generateMapFromFile(input, BNFMap);
 
-    return {};           // This is only here so it will compile
+    Vector<string> res;
+
+    for(int i = 0; i < times; i++) {
+        string element = "";
+        grammarGenerate(input, symbol, BNFMap, element);
+        res.add(element);
+    }
+    return res;
 }
