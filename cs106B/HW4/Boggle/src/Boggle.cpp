@@ -6,6 +6,9 @@
 
 #include "Boggle.h"
 #include "shuffle.h"
+#include "bogglegui.h"
+
+const int ANIMATION_DELAY = 100;
 
 // letters on all 6 sides of every cube
 static string CUBES[16] = {
@@ -51,13 +54,49 @@ char Boggle::getLetter(int row, int col) {
 }
 
 bool Boggle::checkWord(string word) {
-    // TODO: implement
-    return false;   // remove this
+    if(dictionary.contains(toLowerCase(word)) && word.length() >= 4 && !foundWords.contains(toUpperCase(word))) {
+        return true;
+    }
+    return false;
+}
+
+bool Boggle::humanWordSearch(string word, Grid<bool>& isUsed, int row, int col) {
+    BoggleGUI::setAnimationDelay(ANIMATION_DELAY);
+    BoggleGUI::setHighlighted(row, col, true);
+    if(gameBoard[row][col] == word[0] && !isUsed[row][col]) {
+        if(word.substr(1) == "") {
+            return true;
+        }
+        isUsed[row][col] = true;
+        for(int r = row - 1; r <= row + 1; r++) {
+            for(int c = col - 1; c <= col + 1; c ++) {
+                if(gameBoard.inBounds(r, c) && !isUsed[r][c] && humanWordSearch(word.substr(1), isUsed, r,c)) {
+                    return true;
+                }
+            }
+        }
+        isUsed[row][col] = false;
+    }
+    BoggleGUI::setAnimationDelay(ANIMATION_DELAY);
+    BoggleGUI::setHighlighted(row, col, false);
+    return false;
 }
 
 bool Boggle::humanWordSearch(string word) {
-    // TODO: implement
-    return false;   // remove this
+    BoggleGUI::clearHighlighting();
+    Grid<bool> isUsed(dimension, dimension, false);
+    if (checkWord(word)) {
+        for (int r = 0; r < gameBoard.numRows(); r++) {
+            for (int c = 0; c < gameBoard.numCols(); c++) {
+                if(humanWordSearch(word, isUsed, r, c)) {
+                    foundWords.add(toUpperCase(word));
+                    humanScore += word.length() - 3;
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 
 int Boggle::getScoreHuman() {

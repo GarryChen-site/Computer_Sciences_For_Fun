@@ -11,6 +11,7 @@
 #include <string>
 #include "lexicon.h"
 #include "grid.h"
+#include "hashset.h"
 using namespace std;
 
 class Boggle {
@@ -28,11 +29,13 @@ public:
 
 private:
     // TODO: add any other member functions/variables necessary
+    bool humanWordSearch(string word, Grid<bool>& isUsed, int row, int col);
     int dimension;
     int humanScore;
     int computerScore;
     Grid<char> gameBoard;
     Lexicon dictionary;
+    HashSet<string> foundWords;
 
 };
 
