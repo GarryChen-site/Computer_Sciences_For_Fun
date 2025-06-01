@@ -10,6 +10,7 @@
 #include <iostream>
 #include <string>
 #include "lexicon.h"
+#include "grid.h"
 using namespace std;
 
 class Boggle {
@@ -27,6 +28,12 @@ public:
 
 private:
     // TODO: add any other member functions/variables necessary
+    int dimension;
+    int humanScore;
+    int computerScore;
+    Grid<char> gameBoard;
+    Lexicon dictionary;
+
 };
 
 #endif // _boggle_h

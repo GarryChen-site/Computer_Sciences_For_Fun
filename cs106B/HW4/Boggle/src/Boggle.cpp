@@ -5,6 +5,7 @@
 // TODO: remove this comment header
 
 #include "Boggle.h"
+#include "shuffle.h"
 
 // letters on all 6 sides of every cube
 static string CUBES[16] = {
@@ -24,7 +25,23 @@ static string BIG_BOGGLE_CUBES[25] = {
 };
 
 Boggle::Boggle(Lexicon& dictionary, string boardText) {
-    // TODO: implement
+    dimension = 4;
+
+    gameBoard.resize(dimension, dimension);
+    if (boardText == "") {
+        shuffle(CUBES, 16);
+        for (int r = 0; r < gameBoard.numRows(); r++) {
+            for (int c = 0; c < gameBoard.numCols(); c++) {
+                gameBoard[r][c] = stringToChar(toLowerCase(charToString(CUBES[r * dimension + c][randomInteger(0, 5)])));
+            }
+        }
+    } else {
+        for (int r = 0; r < gameBoard.numRows(); r++) {
+            for (int c = 0; c < gameBoard.numCols(); c++) {
+                gameBoard[r][c] = boardText[r * dimension + c];
+            }
+        }
+    }
 
 }
 
