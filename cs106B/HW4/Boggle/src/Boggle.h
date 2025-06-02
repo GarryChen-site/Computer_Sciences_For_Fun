@@ -28,8 +28,8 @@ public:
     friend ostream& operator<<(ostream& out, Boggle& boggle);
 
 private:
-    // TODO: add any other member functions/variables necessary
     bool humanWordSearch(string word, Grid<bool>& isUsed, int row, int col);
+    void computerWordSearch(Set<string>& result, string word, Grid<bool>& isUsed, int row, int col);
     int dimension;
     int humanScore;
     int computerScore;

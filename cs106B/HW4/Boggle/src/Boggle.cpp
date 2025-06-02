@@ -29,7 +29,9 @@ static string BIG_BOGGLE_CUBES[25] = {
 
 Boggle::Boggle(Lexicon& dictionary, string boardText) {
     dimension = 4;
-
+    humanScore = 0;
+    computerScore = 0;
+    this->dictionary = dictionary;
     gameBoard.resize(dimension, dimension);
     if (boardText == "") {
         shuffle(CUBES, 16);
@@ -49,8 +51,10 @@ Boggle::Boggle(Lexicon& dictionary, string boardText) {
 }
 
 char Boggle::getLetter(int row, int col) {
-    // TODO: implement
-    return '?';   // remove this
+    if(!gameBoard.inBounds(row, col)) {
+        throw "Invalid row or column index";
+    }
+    return gameBoard[row][col];
 }
 
 bool Boggle::checkWord(string word) {
@@ -100,22 +104,47 @@ bool Boggle::humanWordSearch(string word) {
 }
 
 int Boggle::getScoreHuman() {
-    // TODO: implement
-    return 0;   // remove this
+    return humanScore;
+}
+
+void Boggle::computerWordSearch(Set<string>& result, string word, Grid<bool>& isUsed, int row, int col) {
+    if(checkWord(word)) {
+        foundWords.add(toUpperCase(word));
+        result.add(toUpperCase(word));
+        computerScore += word.length() - 3;
+    }
+    for(int r = row - 1; r <= row + 1; r++) {
+        for(int c = col - 1; c <= col + 1; c++) {
+            if(gameBoard.inBounds(r, c) && !isUsed[r][c] && dictionary.containsPrefix(word + gameBoard[r][c])) {
+                isUsed[r][c] = true;
+                computerWordSearch(result, word + gameBoard[r][c], isUsed, r, c);
+                isUsed[r][c] = false;
+            }
+        }
+    }
 }
 
 Set<string> Boggle::computerWordSearch() {
-    // TODO: implement
-    Set<string> result;   // remove this
-    return result;        // remove this
+    Set<string> result;
+    Grid<bool> isUsed(dimension, dimension, false);
+    for(int r = 0; r < gameBoard.numRows(); r++) {
+        for(int c = 0; c < gameBoard.numCols(); c++) {
+            computerWordSearch(result, "", isUsed, r, c);
+        }
+    }
+    return result;
 }
 
 int Boggle::getScoreComputer() {
-    // TODO: implement
-    return 0;   // remove this
+    return computerScore;
 }
 
 ostream& operator<<(ostream& out, Boggle& boggle) {
-    // TODO: implement
+    for(int r = 0; r < boggle.gameBoard.numRows(); r++) {
+        for(int c = 0; c < boggle.gameBoard.numCols(); c++) {
+            out << toUpperCase(charToString(boggle.gameBoard[r][c]));
+        }
+        out << endl;
+    }
     return out;
 }
