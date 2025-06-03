@@ -23,8 +23,9 @@ public:
     Set<string> computerWordSearch();
     int getScoreHuman();
     int getScoreComputer();
+    HashSet<string> getFoundWords() const;
+    int getDimension() const;
 
-    // TODO: add any other member functions/variables necessary
     friend ostream& operator<<(ostream& out, Boggle& boggle);
 
 private:

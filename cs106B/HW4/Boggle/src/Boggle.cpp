@@ -65,6 +65,7 @@ bool Boggle::checkWord(string word) {
 }
 
 bool Boggle::humanWordSearch(string word, Grid<bool>& isUsed, int row, int col) {
+    // highlighting
     BoggleGUI::setAnimationDelay(ANIMATION_DELAY);
     BoggleGUI::setHighlighted(row, col, true);
     if(gameBoard[row][col] == word[0] && !isUsed[row][col]) {
@@ -81,6 +82,7 @@ bool Boggle::humanWordSearch(string word, Grid<bool>& isUsed, int row, int col) 
         }
         isUsed[row][col] = false;
     }
+    // de-highlighting
     BoggleGUI::setAnimationDelay(ANIMATION_DELAY);
     BoggleGUI::setHighlighted(row, col, false);
     return false;
@@ -137,6 +139,14 @@ Set<string> Boggle::computerWordSearch() {
 
 int Boggle::getScoreComputer() {
     return computerScore;
+}
+
+int Boggle::getDimension() const {
+    return dimension;
+}
+
+HashSet<string> Boggle::getFoundWords() const {
+    return foundWords;
 }
 
 ostream& operator<<(ostream& out, Boggle& boggle) {
