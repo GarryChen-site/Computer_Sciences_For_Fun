@@ -4,8 +4,15 @@
 
 #include <iostream>
 #include <string>
+#include "vector.h"
 #include "patientqueue.h"
 using namespace std;
+
+struct Patient {
+    string name;
+    int priority;
+    int timestamp;
+};
 
 class VectorPatientQueue : public PatientQueue {
 public:
@@ -21,7 +28,6 @@ public:
     string toString();
 
 private:
-    // TODO: add specified member variable(s)
-    // TODO: add any member functions necessary
+    Vector<Patient> patients;
 
 };
