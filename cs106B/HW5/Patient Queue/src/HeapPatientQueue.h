@@ -10,6 +10,13 @@
 #include "patientqueue.h"
 using namespace std;
 
+const int INITIAL_CAPACITY = 10;
+
+struct HeapPatient {
+    string name;
+    int priority;
+};
+
 class HeapPatientQueue : public PatientQueue  {
 public:
     HeapPatientQueue();
@@ -24,6 +31,12 @@ public:
     string toString();
 
 private:
-    // TODO: add specified member variable(s)
-    // TODO: add any member functions necessary
+    HeapPatient* patients;
+    int capacity;
+    int count;
+    void expand();
+    void shrink();
+    void bubbleUp(int index);
+    void bubbleDown(int index);
+    void swap(int index1, int index2);
 };
