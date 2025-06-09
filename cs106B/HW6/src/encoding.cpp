@@ -6,10 +6,19 @@
 #include "encoding.h"
 // TODO: include any other headers you need
 
-Map<int, int> buildFrequencyTable(istream& input) {
-    // TODO: implement this function
-    Map<int, int> freqTable;   // this is just a placeholder so it will compile
-    return freqTable;          // this is just a placeholder so it will compile
+MyMap buildFrequencyTable(istream& input) {
+    MyMap freqTable;   // this is just a placeholder so it will compile
+    int byte = input.get();
+    while(byte != -1) {
+        if(freqTable.containsKey(byte)) {
+            freqTable.put(byte, freqTable.get(byte) + 1);
+        } else {
+            freqTable.put(byte, 1);
+        }
+        byte = input.get();
+    }
+    freqTable.put(PSEUDO_EOF, 1);
+    return freqTable;   
 }
 
 HuffmanNode* buildEncodingTree(const Map<int, int>& freqTable) {

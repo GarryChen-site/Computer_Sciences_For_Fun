@@ -18,13 +18,14 @@
 #include "bitstream.h"
 #include "HuffmanNode.h"
 #include "map.h"
+#include "mymap.h"
 using namespace std;
 
 /*
  * See huffmanencoding.cpp for documentation of these functions
  * (which you are supposed to write, based on the spec).
  */
-Map<int, int> buildFrequencyTable(istream& input);
+MyMap buildFrequencyTable(istream& input);
 HuffmanNode* buildEncodingTree(const Map<int, int>& freqTable);
 Map<int, string> buildEncodingMap(HuffmanNode* encodingTree);
 void encodeData(istream& input, const Map<int, string>& encodingMap, obitstream& output);
