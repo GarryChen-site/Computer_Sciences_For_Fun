@@ -26,7 +26,7 @@ using namespace std;
  * (which you are supposed to write, based on the spec).
  */
 MyMap buildFrequencyTable(istream& input);
-HuffmanNode* buildEncodingTree(const Map<int, int>& freqTable);
+HuffmanNode* buildEncodingTree(const MyMap& freqTable);
 Map<int, string> buildEncodingMap(HuffmanNode* encodingTree);
 void encodeData(istream& input, const Map<int, string>& encodingMap, obitstream& output);
 void decodeData(ibitstream& input, HuffmanNode* encodingTree, ostream& output);

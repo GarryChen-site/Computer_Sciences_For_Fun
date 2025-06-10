@@ -21,7 +21,7 @@ MyMap buildFrequencyTable(istream& input) {
     return freqTable;   
 }
 
-HuffmanNode* buildEncodingTree(const Map<int, int>& freqTable) {
+HuffmanNode* buildEncodingTree(const MyMap& freqTable) {
     // TODO: implement this function
     return NULL;   // this is just a placeholder so it will compile
 }
