@@ -4,7 +4,7 @@
 // TODO: remove this comment header
 
 #include "encoding.h"
-// TODO: include any other headers you need
+#include "pqueue.h"
 
 MyMap buildFrequencyTable(istream& input) {
     MyMap freqTable;   // this is just a placeholder so it will compile
@@ -22,8 +22,21 @@ MyMap buildFrequencyTable(istream& input) {
 }
 
 HuffmanNode* buildEncodingTree(const MyMap& freqTable) {
-    // TODO: implement this function
-    return NULL;   // this is just a placeholder so it will compile
+    PriorityQueue<HuffmanNode*> frequencies;
+    for(auto key : freqTable.keys()) {
+        HuffmanNode* node = new HuffmanNode(key, freqTable.get(key));
+        frequencies.enqueue(node, node->count);
+    }
+    while(frequencies.size() > 1) {
+        HuffmanNode* left = frequencies.dequeue();
+        HuffmanNode* right = frequencies.dequeue();
+        HuffmanNode* parent = new HuffmanNode(NOT_A_CHAR, left->count + right->count, left, right);
+        frequencies.enqueue(parent, parent->count);
+    }
+    if (frequencies.isEmpty()) {
+        return nullptr; 
+    }
+    return frequencies.dequeue(); 
 }
 
 Map<int, string> buildEncodingMap(HuffmanNode* encodingTree) {

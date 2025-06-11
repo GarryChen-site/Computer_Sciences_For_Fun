@@ -52,7 +52,7 @@ void MyMap::put(int key, int value) {
 
 
 int MyMap::get(int key) const {
-    int bucketIndex = hashFunction(key);
+    int bucketIndex = hashFunction(key) % nBuckets;
     key_val_pair* curr = buckets[bucketIndex];
     while (curr != nullptr) {
         if (curr->key == key) {
@@ -64,7 +64,7 @@ int MyMap::get(int key) const {
 }
 
 bool MyMap::containsKey(int key) const {
-    int bucketIndex = hashFunction(key);
+    int bucketIndex = hashFunction(key) % nBuckets;
     key_val_pair* curr = buckets[bucketIndex];
     while (curr != nullptr) {
         if (curr->key == key) {
@@ -105,7 +105,6 @@ MyMap::MyMap(const MyMap& other) {
 }
 
 MyMap& MyMap::operator= (const MyMap& other) {
-
     if(this == &other) {
         return *this;
     }
