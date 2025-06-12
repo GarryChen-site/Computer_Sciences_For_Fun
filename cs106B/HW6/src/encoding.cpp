@@ -39,10 +39,23 @@ HuffmanNode* buildEncodingTree(const MyMap& freqTable) {
     return frequencies.dequeue(); 
 }
 
+void generateEncodingMap(Map<int, string>& encodingMap, HuffmanNode* node, const string& prefix) {
+    if (node == nullptr) {
+        return;
+    }
+
+    if (node->character != NOT_A_CHAR) {
+        encodingMap.put(node->character, prefix);
+    }
+
+    generateEncodingMap(encodingMap, node->zero, prefix + "0");
+    generateEncodingMap(encodingMap, node->one, prefix + "1");
+}
+
 Map<int, string> buildEncodingMap(HuffmanNode* encodingTree) {
-    // TODO: implement this function
-    Map<int, string> encodingMap;   // this is just a placeholder so it will compile
-    return encodingMap;             // this is just a placeholder so it will compile
+    Map<int, string> encodingMap;
+    generateEncodingMap(encodingMap, encodingTree, "");
+    return encodingMap;
 }
 
 void encodeData(istream& input, const Map<int, string>& encodingMap, obitstream& output) {
