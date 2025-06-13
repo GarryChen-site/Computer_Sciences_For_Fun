@@ -59,7 +59,17 @@ Map<int, string> buildEncodingMap(HuffmanNode* encodingTree) {
 }
 
 void encodeData(istream& input, const Map<int, string>& encodingMap, obitstream& output) {
-    // TODO: implement this function
+    int byte = input.get();
+    while(byte != -1) {
+        string binaryCode = encodingMap.get(byte);
+        for(char bit : binaryCode) {
+            output.writeBit(bit - '0');
+        }
+        byte = input.get();
+    }
+    for (int bit: encodingMap.get(PSEUDO_EOF)) {
+        output.writeBit(bit - '0');
+    }
 }
 
 void decodeData(ibitstream& input, HuffmanNode* encodingTree, ostream& output) {
