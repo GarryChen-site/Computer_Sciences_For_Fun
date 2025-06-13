@@ -5,6 +5,7 @@
 
 #include "encoding.h"
 #include "pqueue.h"
+#include "filelib.h"
 
 MyMap buildFrequencyTable(istream& input) {
     MyMap freqTable;   // this is just a placeholder so it will compile
@@ -73,17 +74,44 @@ void encodeData(istream& input, const Map<int, string>& encodingMap, obitstream&
 }
 
 void decodeData(ibitstream& input, HuffmanNode* encodingTree, ostream& output) {
-    // TODO: implement this function
+    int bit = input.readBit();
+    HuffmanNode* currentNode = encodingTree;
+    while (bit != -1) {
+        if (bit == 0) {
+            currentNode = currentNode->zero;
+        } else {
+            currentNode = currentNode->one;
+        }
+
+        if (currentNode != nullptr && currentNode->character != NOT_A_CHAR) {
+            output.put(currentNode->character);
+            currentNode = encodingTree;
+        }
+
+        bit = input.readBit();
+    }
 }
 
 void compress(istream& input, obitstream& output) {
-    // TODO: implement this function
+    MyMap freqTable = buildFrequencyTable(input);
+    rewindStream(input);
+    HuffmanNode* encodingTree = buildEncodingTree(freqTable);
+    Map<int, string> encodingMap = buildEncodingMap(encodingTree);
+    output << freqTable;
+    encodeData(input, encodingMap, output);
 }
 
 void decompress(ibitstream& input, ostream& output) {
-    // TODO: implement this function
+    MyMap freqTable;
+    input >> freqTable;
+    HuffmanNode* encodingTree = buildEncodingTree(freqTable);
+    decodeData(input, encodingTree, output);
 }
 
 void freeTree(HuffmanNode* node) {
-    // TODO: implement this function
+    if (node != nullptr) {
+        freeTree(node->zero);
+        freeTree(node->one);
+        delete node;
+    }
 }
