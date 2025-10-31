@@ -71,17 +71,16 @@ int main() {
   // Display results in a table format
   cout << "Results:\n";
   cout << "========\n";
-  cout << std::left << std::setw(15) << "Container Size" << std::setw(15)
-       << "Vector (ms)" << std::setw(15) << "Deque (ms)" << std::setw(15)
-       << "Difference" << endl;
-  cout << std::string(60, '-') << endl;
+  cout << left << setw(15) << "Container Size" << setw(15) << "Vector (ms)"
+       << setw(15) << "Deque (ms)" << setw(15) << "Difference" << endl;
+  cout << string(60, '-') << endl;
 
   for (size_t i = 0; i < containerSizes.size(); ++i) {
     double diff = dequeTimes[i] - vectorTimes[i];
-    cout << std::left << std::setw(15) << containerSizes[i] << std::setw(15)
-         << std::fixed << std::setprecision(2) << vectorTimes[i]
-         << std::setw(15) << std::fixed << std::setprecision(2) << dequeTimes[i]
-         << std::setw(15) << std::fixed << std::setprecision(2) << diff << endl;
+    cout << left << setw(15) << containerSizes[i] << setw(15) << fixed
+         << setprecision(2) << vectorTimes[i] << setw(15) << fixed
+         << setprecision(2) << dequeTimes[i] << setw(15) << fixed
+         << setprecision(2) << diff << endl;
   }
 
   // Calculate and display averages
@@ -95,11 +94,11 @@ int main() {
 
   cout << "\nSummary:\n";
   cout << "========\n";
-  cout << "Average vector access time: " << std::fixed << std::setprecision(2)
+  cout << "Average vector access time: " << fixed << setprecision(2)
        << avgVectorTime << " ms\n";
-  cout << "Average deque access time:  " << std::fixed << std::setprecision(2)
+  cout << "Average deque access time:  " << fixed << setprecision(2)
        << avgDequeTime << " ms\n";
-  cout << "Performance difference:     " << std::fixed << std::setprecision(2)
+  cout << "Performance difference:     " << fixed << setprecision(2)
        << avgDequeTime - avgVectorTime << " ms\n";
 
   if (avgVectorTime < avgDequeTime) {
