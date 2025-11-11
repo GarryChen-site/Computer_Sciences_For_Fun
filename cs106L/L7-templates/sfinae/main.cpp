@@ -39,10 +39,12 @@ struct ConfuseDuck {
   }
 };
 
-// (void) [condition], size_t() means try substituting [condition] to ensure it
-// semantically compiles but discard that result (hence the (void)). The comma
-// operator ignores the left-hand side, and returns the default value of
-// size_t(), which is how the return value is determined.
+// (void) [condition], size_t() do the actual check, but discard that result
+// (hence the (void)) - prevents the expression's return value from affecting
+// overload resolution.
+
+// The comma operator ignores the left-hand side, and returns the
+// default value of size_t(), which is how the return value is determined.
 
 template <typename T>
 auto print_size(const T& a) -> decltype((void)a.size(), size_t()) {
