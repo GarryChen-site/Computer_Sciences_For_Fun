@@ -86,5 +86,7 @@ int main() {
   //   print_size(confuse_duck);  // ERROR: Ambiguous! both first and second
   //   match
 
+  // print_size(nullptr);    // Compilation error: no match found
+
   return 0;
 }
