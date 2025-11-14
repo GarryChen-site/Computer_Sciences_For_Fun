@@ -1,9 +1,15 @@
 CFLAGS = -O -std=c++17 -Wall
 CC = clang++
-SRC = chal2.cpp 
+SRC = chal6.cpp
 OBJ = $(SRC:.cpp = .o) 
 
-chal2: $(OBJ) 
-	$(CC) $(CFLAGS) -o chal2 $(OBJ) 
+main: $(OBJ)
+	$(CC) $(CFLAGS) -o main $(OBJ)
+
+chal2: chal2.o
+	$(CC) $(CFLAGS) -o chal2 chal2.o
+
+chal6: chal6.o 
+	$(CC) $(CFLAGS) -o chal6 chal6.o
 clean:
-	rm -f chal2 *.o
+	rm -f main chal2 chal6 *.o
