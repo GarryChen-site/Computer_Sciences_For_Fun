@@ -1,6 +1,6 @@
-CFLAGS = -O -std=c++17 -Wall
+CFLAGS = -O -std=c++23 -Wall
 CC = clang++
-SRC = chal5.cpp
+SRC = chal4.cpp
 OBJ = $(SRC:.cpp = .o) 
 
 main: $(OBJ)
