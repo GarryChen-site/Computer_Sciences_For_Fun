@@ -29,6 +29,8 @@ vector::iterator vector::end() { return _elems + size(); }
 
 bool vector::empty() { return size() == 0; }
 
+size_t vector::size() { return _size; }
+
 size_t vector::capacity() { return _capacity; }
 
 void vector::clear() { _size = 0; }
@@ -56,18 +58,18 @@ void vector::push_back(value_type value) { insert(end(), value); }
 void vector::pop_back() { --_size; }
 
 void vector::debug() {
-  for (iterator it = begin(); it != end(); ++it) {
-    std::cout << *it << " ";
-  }
-  std::cout << std::endl;
+  std::copy(begin(), end(), std::ostream_iterator<int>(std::cout, " "));
+  std::cout << '\n';
 }
 
 void vector::reserve(size_t new_capacity) {
   if (new_capacity <= capacity()) {
     return;
   }
-  value_type* new_elems = new value_type[new_capacity];
-  std::copy(begin(), end(), new_elems);
+  value_type* new_elems = new int[new_capacity];
+  for (size_t i = 0; i < size(); ++i) {
+    new_elems[i] = _elems[i];
+  }
   delete[] _elems;
   _elems = new_elems;
   _capacity = new_capacity;
