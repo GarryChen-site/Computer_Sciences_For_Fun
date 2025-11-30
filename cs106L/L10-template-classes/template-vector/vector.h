@@ -21,8 +21,8 @@ class vector {
   iterator end();
 
   bool empty();
-  size_t size();
-  size_t capacity();
+  size_t size() const;
+  size_t capacity() const;
 
   void clear();
   iterator insert(iterator pos, const value_type& value);
@@ -43,5 +43,7 @@ class vector {
   size_t _size;
 };
 }  // namespace mycollection
+
+#include "vector.cpp"
 
 #endif  // BOUNDED_VECTOR_H

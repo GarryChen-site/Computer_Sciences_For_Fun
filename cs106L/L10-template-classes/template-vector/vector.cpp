@@ -39,7 +39,7 @@ typename vector<T>::iterator vector<T>::begin() {
 
 template <typename T>
 typename vector<T>::iterator vector<T>::end() {
-  return *(end() - 1);
+  return _elems + _size;
 }
 
 template <typename T>
@@ -48,12 +48,12 @@ bool vector<T>::empty() {
 }
 
 template <typename T>
-size_t vector<T>::size() {
+size_t vector<T>::size() const {
   return _size;
 }
 
 template <typename T>
-size_t vector<T>::capacity() {
+size_t vector<T>::capacity() const {
   return _capacity;
 }
 
@@ -121,3 +121,6 @@ void vector<T>::swap_elements(InputIt first, InputIt last) {
   }
   std::swap_ranges(first, last, begin());
 }
+
+template <typename T>
+void vector<T>::reserve(size_t n) {}
