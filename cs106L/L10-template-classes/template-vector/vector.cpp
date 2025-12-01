@@ -1,5 +1,6 @@
-
+#ifndef BOUNDED_VECTOR_H
 #include "vector.h"
+#endif
 using namespace mycollection;
 
 template <typename T>
