@@ -27,6 +27,11 @@ void still_crashes(vector<int> vec) {
   cout << "The next line will crash!" << endl;
 }  // the code crashes here due to a triple free (delete called on same pointer
    // three times). Why?
+// three pointers point to the same memory location
+// when the function ends, the destructor is called three times
+// Destructor- release the resource
+// Copy constructor- Deep copy when creating from another vector
+// Copy assignment operator- Deep copy when assigning to another vector
 
 int main() {
   vector<int> vec;
