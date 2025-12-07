@@ -51,10 +51,13 @@ StreamingMedianTracker<T, Compare>::StreamingMedianTracker(const Compare& comp)
 
 template <typename T, typename Compare>
 void StreamingMedianTracker<T, Compare>::balance() {
+  // Lower heap can have at most one more element than upper heap
   if (_lower.size() > _upper.size() + 1) {
     _upper.push(_lower.top());
     _lower.pop();
-  } else if (_upper.size() > _lower.size()) {
+  }
+  // Upper heap cannot have more elements than lower heap
+  else if (_upper.size() > _lower.size()) {
     _lower.push(_upper.top());
     _upper.pop();
   }
@@ -65,8 +68,11 @@ void StreamingMedianTracker<T, Compare>::insert(const_reference value) {
   if (_lower.empty()) {
     _lower.push(value);
   } else if (!_comp(_lower.top(), value)) {
+    // If value is less than or equal to the top of lower heap, push to lower
+    // heap
     _lower.push(value);
   } else {
+    // Otherwise, push to upper heap
     _upper.push(value);
   }
   balance();
