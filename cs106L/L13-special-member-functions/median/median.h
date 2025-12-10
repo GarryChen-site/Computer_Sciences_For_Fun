@@ -14,6 +14,7 @@ class StreamingMedianTracker {
 
   ~StreamingMedianTracker() = default;
 
+  // Copy constructor and assignment operator
   StreamingMedianTracker(const StreamingMedianTracker<T, Compare>& other) =
       default;
   StreamingMedianTracker<T, Compare>& operator=(
